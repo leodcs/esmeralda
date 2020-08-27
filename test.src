@@ -1,5 +1,6 @@
-{ Isso eh um comentario }
-
 def funcao()
-  10.5412 = 812938712
+  a := 10.5412 * 812938712;
+  b := true;
+  c := false;
+  d := b or c;
 end
