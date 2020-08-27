@@ -1,11 +1,31 @@
 # frozen_string_literal: true
 
-class Token
-  attr_accessor :type
-  attr_accessor :value
+Token = Struct.new(:type, :value, :line, :column) do
+  def self.letra
+    /[a-zA-Z]/
+  end
 
-  def initialize(type, value)
-    @type = type
-    @value = value
+  def self.digito
+    /[0-9]/
+  end
+
+  def self.id
+    /\b#{letra}(#{letra}|#{digito})*\b/
+  end
+
+  def self.integer
+    /#{digito}+/
+  end
+
+  def self.types
+    { oparen: /\(/,
+      cparen: /\)/,
+      obrace: /{/,
+      cbrace: /}/,
+      id: id,
+      real: /\b#{integer}\.#{integer}\b/,
+      integer: /\b#{integer}\b/,
+      string: id,
+      op_relacional: /<>|<=|>=|<|>|=/ }
   end
 end

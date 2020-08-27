@@ -2,6 +2,6 @@ require 'pry'
 require './lexer'
 require './token'
 
-file = File.read('test.src')
-tokens = Lexer.new(file).tokenize
-puts tokens.map(&:inspect).join("\n")
+arquivo = File.read('test.src')
+tabela_lexica = Lexer.new(arquivo).tokenize
+puts tabela_lexica.map(&:inspect).join("\n")
