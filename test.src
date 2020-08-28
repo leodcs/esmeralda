@@ -1,6 +1,8 @@
-def funcao()
-  a := 10.5412 * 812938712;
-  b := true;
-  c := false;
-  d := b or c;
+BEGIN program do
+  def funcao()
+    a := 10.5412 * 812938712;
+    b := true;
+    c := false;
+    d := b or c;
+  end
 end

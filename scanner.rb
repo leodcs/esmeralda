@@ -1,15 +1,12 @@
 # frozen_string_literal: true
 
 class Scanner
-  def initialize(file)
+  def self.scan(file)
     @file = file
-  end
-
-  def tokenize
     tokens = []
 
     @file.lines.each_with_index do |line, line_number|
-      @full_line = line#.downcase
+      @full_line = line.downcase
       @line_string = @full_line.strip
       @line_number = line_number + 1
 
@@ -21,10 +18,9 @@ class Scanner
     tokens
   end
 
-  private
-
-  def read_tokens_from_line
+  def self.read_tokens_from_line
     column = @full_line.index(@line_string)
+
     Token.types.each do |type, re|
       regexp = /\A(#{re})/
       matches = @line_string.match(regexp)
