@@ -46,6 +46,6 @@ class Scanner
       return Token.new(token, lexema, valor, @line_number, column)
     end
 
-    raise "Unexpected token #{@line_text.inspect} on line #{@line_number} column #{column}"
+    raise "Token inesperado: #{@line_text.inspect} na linha #{@line_number} coluna #{column}!"
   end
 end
