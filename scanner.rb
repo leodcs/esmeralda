@@ -2,28 +2,28 @@
 
 class Scanner
   def self.scan(file)
-    @file = file
     tokens = []
+    @file = file
 
     @file.lines.each_with_index do |line, line_number|
       @full_line = line
-      @line_text = @full_line.strip
+      @text_to_scan = @full_line.strip
       @line_number = line_number + 1
 
-      until @line_text.empty? do
-        tokens << scan_tokens_from_line
+      until @text_to_scan.empty? do
+        tokens.push(scan_tokens_from_line)
       end
     end
 
-    tokens
+    return tokens
   end
 
   def self.scan_tokens_from_line
-    column = @full_line.index(@line_text)
+    column = @full_line.index(@text_to_scan)
 
     Token.types.each do |type, re|
       regexp = /\A(#{re})/i
-      matches = @line_text.match(regexp)
+      matches = @text_to_scan.match(regexp)
       next if matches.nil?
 
       token = type.to_s
@@ -41,11 +41,11 @@ class Scanner
         lexema = match
       end
 
-      @line_text = @line_text[match.length..-1].strip
+      @text_to_scan = @text_to_scan[match.length..-1].strip # FIXME
 
       return Token.new(token, lexema, valor, @line_number, column)
     end
 
-    raise "Token inesperado: #{@line_text.inspect} na linha #{@line_number} coluna #{column}!"
+    raise "Token inesperado: #{@text_to_scan.inspect} na linha #{@line_number} coluna #{column}!"
   end
 end
