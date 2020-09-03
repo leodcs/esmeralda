@@ -31,7 +31,7 @@ class Scanner
       match = matches[0]
 
       case type
-      when :palavra_reservada, :op_booleano, :op_aritmetico, :op_relacional, :achave, :fchave, :aparen, :fparen, :especial
+      when :palavra_reservada
         token = match
       when :integer, :real
         token = 'Numerico'
@@ -39,6 +39,8 @@ class Scanner
       when :id, :string
         token = 'ID'
         lexema = match
+      else
+        token = match
       end
 
       @text_to_scan = @text_to_scan[match.length..-1].strip # FIXME

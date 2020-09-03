@@ -1,8 +1,18 @@
 # frozen_string_literal: true
 
-# TODO: Adicionar coluna para salvar o match
+class Token
+  attr_reader :match, :type, :token, :lexema, :valor, :linha, :coluna
 
-Token = Struct.new(:match, :type, :token, :lexema, :valor, :linha, :coluna) do
+  def initialize(match, type, token, lexema, valor, linha, coluna)
+    @match = match
+    @type = type
+    @token = token
+    @lexema = lexema
+    @valor = valor
+    @linha = linha
+    @coluna = coluna
+  end
+
   def self.letra
     /[a-zA-Z]/
   end
@@ -21,10 +31,11 @@ Token = Struct.new(:match, :type, :token, :lexema, :valor, :linha, :coluna) do
 
   def self.types
     { palavra_reservada: /BEGIN|END|IF|THEN|ELSE|WHILE|DO|UNTIL|REPEAT|INTEGER|REAL|ALL|STRING|PROGRAM/,
-      achave: /{/,
-      fchave: /}/,
-      aparen: /\(/,
-      fparen: /\)/,
+      abre_chave: /{/,
+      fecha_chave: /}/,
+      abre_paren: /\(/,
+      fecha_paren: /\)/,
+      ponto_virgula: /;/,
       op_booleano: /\bOR|AND\b/,
       id: id,
       real: /\b#{integer}\.#{integer}\b/,
@@ -32,6 +43,6 @@ Token = Struct.new(:match, :type, :token, :lexema, :valor, :linha, :coluna) do
       string: id,
       op_relacional: /<>|<=|>=|<|>|=/,
       op_aritmetico: /\+|-|\*|\//,
-      especial: /\.|,|;|:=/ }
+      especial: /\.|,|:=/ }
   end
 end
