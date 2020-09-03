@@ -6,7 +6,7 @@ class Scanner
     @file = file
 
     @file.lines.each_with_index do |line, line_number|
-      @full_line = line
+      @full_line = line.upcase
       @text_to_scan = @full_line.strip
       @line_number = line_number + 1
 
@@ -31,7 +31,7 @@ class Scanner
       match = matches[0]
 
       case type
-      when :palavra_reservada, :operador, :especial
+      when :palavra_reservada, :op_booleano, :op_aritmetico, :op_relacional, :achave, :fchave, :aparen, :fparen, :especial
         token = match
       when :integer, :real
         token = 'Numerico'
@@ -43,9 +43,9 @@ class Scanner
 
       @text_to_scan = @text_to_scan[match.length..-1].strip # FIXME
 
-      return Token.new(token, lexema, valor, @line_number, column)
+      return Token.new(match, type, token, lexema, valor, @line_number, column)
     end
 
-    raise "Token inesperado: #{@text_to_scan.inspect} na linha #{@line_number} coluna #{column}!"
+    raise "Token inesperado: #{@text_to_scan.inspect} na linha #{@line_number} coluna #{column}"
   end
 end
