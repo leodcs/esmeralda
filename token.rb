@@ -13,36 +13,38 @@ class Token
     @coluna = coluna
   end
 
-  def self.letra
+  def Token.letra
     /[a-zA-Z]/
   end
 
-  def self.digito
+  def Token.digito
     /[0-9]/
   end
 
-  def self.id
-    /\b#{letra}(#{letra}|#{digito})*\b/
+  def Token.id
+    /\b#{Token.letra}(#{Token.letra}|#{Token.digito})*\b/
   end
 
-  def self.integer
-    /#{digito}+/
+  def Token.integer
+    /#{Token.digito}+/
   end
 
-  def self.types
-    { palavra_reservada: /BEGIN|END|IF|THEN|ELSE|WHILE|DO|UNTIL|REPEAT|INTEGER|REAL|ALL|STRING|PROGRAM/,
-      abre_chave: /{/,
-      fecha_chave: /}/,
-      abre_paren: /\(/,
-      fecha_paren: /\)/,
-      ponto_virgula: /;/,
-      op_booleano: /\bOR|AND\b/,
-      id: id,
-      real: /\b#{integer}\.#{integer}\b/,
-      integer: /\b#{integer}\b/,
-      string: id,
-      op_relacional: /<>|<=|>=|<|>|=/,
-      op_aritmetico: /\+|-|\*|\//,
-      especial: /\.|,|:=/ }
+  def Token.types
+    {
+      'PalavraReservada': /PROGRAM|BEGIN|END|IF|THEN|ELSE|WHILE|DO|UNTIL|REPEAT|INTEGER|REAL|ALL|STRING/,
+      'OpBooleano': /\bOR|AND\b/,
+      'Id': Token.id,
+      'Real': /\b#{Token.integer}\.#{Token.integer}\b/,
+      'Integer': /\b#{Token.integer}\b/,
+      'String': Token.id,
+      'OpRelacional': /<>|<=|>=|<|>|=/,
+      'OpAritmetico': /\+|-|\*|\//,
+      'Especial': /\.|,|:=/,
+      'AbreChave': /{/,
+      'FechaChave': /}/,
+      'AbreParen': /\(/,
+      'FechaParen': /\)/,
+      'PontoVirgula': /;/
+    }
   end
 end

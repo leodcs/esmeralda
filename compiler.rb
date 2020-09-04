@@ -1,5 +1,6 @@
 require 'pry'
 require 'terminal-table'
+require 'ostruct'
 require './token'
 require './scanner'
 
@@ -7,7 +8,7 @@ arquivo = File.read('input.txt')
 
 # Inicio da Compilacao
 begin
-  tabela_lexica = Scanner.scan(arquivo)
+  tabela_lexica = Scanner.new(arquivo).scan
 rescue StandardError => e
   e.set_backtrace([])
   puts "ERRO #{e.message}"

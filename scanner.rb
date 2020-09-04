@@ -1,9 +1,12 @@
 # frozen_string_literal: true
 
 class Scanner
-  def self.scan(file)
-    tokens = []
+  def initialize(file)
     @file = file
+  end
+
+  def scan
+    tokens = []
 
     @file.lines.each_with_index do |line, line_number|
       @full_line = line.upcase
@@ -18,7 +21,7 @@ class Scanner
     return tokens
   end
 
-  def self.scan_tokens_from_line
+  def scan_tokens_from_line
     column = @full_line.index(@text_to_scan)
 
     Token.types.each do |type, re|
@@ -31,12 +34,12 @@ class Scanner
       match = matches[0]
 
       case type
-      when :palavra_reservada
+      when :PalavraReservada
         token = match
-      when :integer, :real
+      when :Integer, :Real
         token = 'Numerico'
         valor = match.to_i
-      when :id, :string
+      when :Id, :String
         token = 'ID'
         lexema = match
       else
