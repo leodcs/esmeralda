@@ -30,8 +30,16 @@ class Token
   end
 
   def Token.types
-    {
-      'PalavraReservada': /PROGRAM|BEGIN|END|IF|THEN|ELSE|WHILE|DO|UNTIL|REPEAT|INTEGER|REAL|ALL|STRING/,
+    { 'Program': /\bPROGRAM\b/,
+      'Begin': /\bBEGIN\b/,
+      'End': /\bEND\b/,
+      'If': /\bIF\b/,
+      'Then': /\bTHEN\b/,
+      'Else': /\bELSE\b/,
+      'While': /\bWHILE\b/,
+      'Do': /\bDO\b/,
+      'Until': /\bUNTIL\b/,
+      'Repeat': /\bREPEAT\b/,
       'OpBooleano': /\bOR|AND\b/,
       'Id': Token.id,
       'Real': /\b#{Token.integer}\.#{Token.integer}\b/,
@@ -39,12 +47,12 @@ class Token
       'String': Token.id,
       'OpRelacional': /<>|<=|>=|<|>|=/,
       'OpAritmetico': /\+|-|\*|\//,
-      'Especial': /\.|,|:=/,
+      'Especial': /,|:=/,
       'AbreChave': /{/,
       'FechaChave': /}/,
       'AbreParen': /\(/,
       'FechaParen': /\)/,
-      'PontoVirgula': /;/
-    }
+      'Ponto': /\./,
+      'PontoVirgula': /;/ }
   end
 end

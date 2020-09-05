@@ -9,7 +9,7 @@ class Scanner
     tokens = []
 
     @file.lines.each_with_index do |line, line_number|
-      @full_line = line.upcase
+      @full_line = line
       @text_to_scan = @full_line.strip
       @line_number = line_number + 1
 
@@ -25,7 +25,7 @@ class Scanner
     column = @full_line.index(@text_to_scan) + 1
 
     Token.types.each do |type, re|
-      regexp = /\A(#{re})/i
+      regexp = /\A(#{re.source})/i
       matches = @text_to_scan.match(regexp)
       next if matches.nil?
 
@@ -51,6 +51,6 @@ class Scanner
       return Token.new(match, type, token, lexema, valor, @line_number, column)
     end
 
-    raise "Token inesperado: #{@text_to_scan.inspect} na linha #{@line_number} coluna #{column}"
+    raise "01: Identificador ou símbolo inválido. #{@text_to_scan.inspect} - Linha #{@line_number}, Coluna #{column}."
   end
 end
