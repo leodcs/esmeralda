@@ -22,7 +22,7 @@ class Scanner
   end
 
   def scan_tokens_from_line
-    column = @full_line.index(@text_to_scan)
+    column = @full_line.index(@text_to_scan) + 1
 
     Token.types.each do |type, re|
       regexp = /\A(#{re})/i
