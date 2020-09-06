@@ -33,9 +33,6 @@ puts table
 data = {}
 root_name = "#{parsing.root.class.name}(#{parsing.root.value.inspect})"
 data["#{root_name}"] = []
-parsing.root.nodes.each do |node|
-  data["#{root_name}"] << "#{node.class.name}(#{node.debug})"
-end
-tree = TTY::Tree.new(data)
-puts tree.render
+
+puts parsing.root.nodes.map(&:inspect).join("\n")
 # Fim da Exibição

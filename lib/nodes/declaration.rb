@@ -6,9 +6,5 @@ module Nodes
       @value = value
       @type = type
     end
-
-    def debug
-      [type.to_sym, value]
-    end
   end
 end

@@ -7,6 +7,6 @@ Begin
      if (x > 20) then
        x := 2;
      else
-       x := ;
+       x := 3;
   end;
 end.

@@ -9,7 +9,7 @@ class Parser
   def parse
     # Parsing starts here
 
-    # ignora_comentarios
+    # ignora_comentarios # TODO: metodo para ignorar comentarios
     programa
 
     self
@@ -67,22 +67,25 @@ class Parser
     prog_name = consume(:ID).match
     consume(:PONTO_VIRGULA)
 
-    declarations = parse_declaracoes
+    declarations = declaracoes
     @declarations += declarations
 
     consume(:BEGIN)
-    bloco
+    body = bloco
     consume(:END)
     consume(:PONTO)
 
-    return Nodes::Program.new(prog_name, declarations)
+    nodes = declarations + [body]
+    return Nodes::Program.new(prog_name, nodes)
   end
 
   def bloco
     consume(:BEGIN)
-    comandos
+    nodes = comandos
     consume(:END)
     consume(:PONTO_VIRGULA)
+
+    return Nodes::Block.new(nodes)
   end
 
   def comandos
@@ -104,7 +107,7 @@ class Parser
 
     consume(:IF)
     consume(:ABRE_PAREN)
-    expr = expr_relacional
+    nodes = expr_relacional
     consume(:FECHA_PAREN)
     consume(:THEN)
     comando
@@ -113,7 +116,7 @@ class Parser
       comando!
     end
 
-    return Nodes::Conditional.new(expr)
+    return Nodes::Conditional.new(nodes)
   end
 
   def expr_relacional
@@ -121,6 +124,8 @@ class Parser
     val!
     consume(:OP_RELACIONAL)
     val!
+
+    return Nodes::Expression.new
   end
 
   def val(options = {})
@@ -158,8 +163,10 @@ class Parser
   def atribuicao!
     consume(:ID)
     consume(:DPI)
-    expr_arit!
+    nodes = expr_arit!
     consume(:PONTO_VIRGULA)
+
+    return Nodes::Assignment.new(nodes)
   end
 
   def expr_arit(options = {})
@@ -208,11 +215,11 @@ class Parser
     return results
   end
 
-  def parse_declaracoes
-    repeat(:parse_declaracao)
+  def declaracoes
+    repeat(:declaracao)
   end
 
-  def parse_declaracao
+  def declaracao
     return unless peek(:TIPO_VAR)
 
     var_names = []

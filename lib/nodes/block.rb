@@ -1,5 +1,5 @@
 module Nodes
-  class Conditional
+  class Block
     attr_reader :nodes
 
     def initialize(nodes = [])
