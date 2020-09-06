@@ -1,2 +1,0 @@
-class RootNode < Node
-end

@@ -9,12 +9,12 @@ class Scanner
     tokens = []
 
     @file.lines.each_with_index do |line, line_number|
-      @full_line = line
+      @full_line = line.upcase
       @text_to_scan = @full_line.strip
       @line_number = line_number + 1
 
       until @text_to_scan.empty? do
-        tokens.push(scan_tokens_from_line)
+        tokens << scan_tokens_from_line
       end
     end
 
@@ -34,12 +34,10 @@ class Scanner
       match = matches[0]
 
       case type
-      when :PalavraReservada
-        token = match
-      when :Integer, :Real
+      when :INTEGER, :REAL
         token = 'Numerico'
         valor = match.to_i
-      when :Id, :String
+      when :ID, :STRING
         token = 'ID'
         lexema = match
       else

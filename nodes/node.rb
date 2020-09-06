@@ -1,7 +1,13 @@
-class Node
-  attr_reader :name
+module Nodes
+  class Node
+    attr_reader :nodes
 
-  def initialize(name)
-    @name = name
+    def initialize(nodes = [])
+      @nodes = nodes
+    end
+
+    def debug
+      value
+    end
   end
 end

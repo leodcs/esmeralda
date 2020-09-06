@@ -1,0 +1,30 @@
+<comentario> ::= { '*******' }
+
+<Programa> ::= <bloco_principal>
+
+<bloco_principal> ::= Program <id>; [<decl_var>]* Begin <bloco> End.
+
+<bloco> ::= Begin [<comando>  [ <comando>]*]* End ;
+
+<decl_var> ::= <tipo> <id> [,<id>]*;
+<tipo> ::= integer | real | string
+
+<comando> ::= <comando_basico>
+              | <iteracao>
+              |  if (<expr_relacional>) then <comando> [else <comando>]*
+
+<comando_basico> ::= <atribuicao>
+                     | <bloco>
+                     | All ( <id>  [, <id>]* );
+<atribuicao> ::= <id> := <expr_arit> ;
+<iteracao> ::= while (<expr_relacional>) do <comando>
+               | repeat <comando> until (<expr_relacional>) ;
+
+<val> ::= <id>  | <integer> | <real>
+
+<expr_relacional> ::= <val> <op_relacionais> <val>
+			| (<expr_relacional>) [<op_booleanos> (<expr_relacional>)]*
+
+<expr_arit> ::=  <val>
+	         | <val> <op_aritmetico> <val>
+	         | (<expr_arit>) <op_aritmetico> (<expr_arit>)
