@@ -3,9 +3,10 @@ Program teste;
   Integer x;
   real y;
 Begin
- {{ Begin
-     i1 := i2 + 10;
-     if (( x > 20) and (y < 10)) then
-        All (l1);
-  end; }}
+  Begin
+     if (x > 20) then
+       x := 2;
+     else
+       x := ;
+  end;
 end.

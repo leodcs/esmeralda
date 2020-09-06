@@ -48,7 +48,7 @@ class Token
       :STRING => Token.id,
       :OP_RELACIONAL => /<>|<=|>=|<|>|=/,
       :OP_ARITMETICO => /\+|-|\*|\//,
-      :ATRIBUI => /:=/,
+      :DPI => /:=/,
       :VIRGULA => /,/,
       :ABRE_CHAVE => /{/,
       :FECHA_CHAVE => /}/,

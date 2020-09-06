@@ -1,5 +1,5 @@
 module Nodes
-  class Declaration < Node
+  class Declaration
     attr_reader :value, :type
 
     def initialize(value, type)

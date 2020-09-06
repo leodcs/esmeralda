@@ -1,8 +1,9 @@
-require './token'
-require './scanner'
-require './parser'
-require './nodes/node'
-Dir['./nodes/*.rb'].sort.each { |node| require node }
+Dir['./config/**/*.rb'].sort.each { |config| require config }
+
+require './lib/token'
+require './lib/scanner'
+require './lib/parser'
+Dir['./lib/nodes/*.rb'].sort.each { |node| require node }
 
 # Debugging
 require 'pry'

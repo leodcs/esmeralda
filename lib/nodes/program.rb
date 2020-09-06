@@ -1,6 +1,6 @@
 module Nodes
-  class Program < Node
-    attr_reader :value
+  class Program
+    attr_reader :value, :nodes
 
     def initialize(value, nodes = [])
       @value = value
