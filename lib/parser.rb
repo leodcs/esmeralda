@@ -107,7 +107,7 @@ class Parser
 
     consume(:IF)
     consume(:ABRE_PAREN)
-    nodes = expr_relacional
+    nodes = [expr_relacional]
     consume(:FECHA_PAREN)
     consume(:THEN)
     comando
@@ -121,11 +121,12 @@ class Parser
 
   def expr_relacional
     # TODO: segunda parte da gramatica
-    val!
-    consume(:OP_RELACIONAL)
-    val!
+    nodes = []
+    nodes << val!
+    operador = consume(:OP_RELACIONAL)
+    nodes << val!
 
-    return Nodes::Expression.new
+    return Nodes::Expression.new(operador, nodes)
   end
 
   def val(options = {})
@@ -139,15 +140,27 @@ class Parser
   end
 
   def id
-    consume(:ID) if peek(:ID)
+    return unless peek(:ID)
+
+    value = consume(:ID)
+
+    return Nodes::Id.new(value)
   end
 
   def integer
-    consume(:INTEGER) if peek(:INTEGER)
+    return unless peek(:INTEGER)
+
+    value = consume(:INTEGER)
+
+    return Nodes::Integer.new(value)
   end
 
   def real
-    consume(:REAL) if peek(:REAL)
+    return unless peek(:REAL)
+
+    value = consume(:REAL)
+
+    return Nodes::Real.new(value)
   end
 
   def comando_basico

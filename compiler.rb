@@ -8,7 +8,8 @@ Dir['./lib/nodes/*.rb'].sort.each { |node| require node }
 # Debugging
 require 'pry'
 require 'terminal-table'
-require 'tty-tree'
+require 'rgl/adjacency'
+require 'rgl/dot'
 # End Debugging
 
 arquivo = File.read('input.txt')
@@ -16,7 +17,7 @@ arquivo = File.read('input.txt')
 # Inicio da Compilacao
 # begin
   tabela_lexica = Scanner.new(arquivo).scan
-  parsing = Parser.new(tabela_lexica).parse
+  parse = Parser.new(tabela_lexica).parse
 # rescue StandardError => e
 #   e.set_backtrace([])
 #   puts "ERRO #{e.message}"
@@ -30,9 +31,23 @@ tabela_lexica_as_h = tabela_lexica.map { |row| row.instance_variables.map { |var
 table = Terminal::Table.new(headings: cabecalhos, rows: tabela_lexica_as_h)
 puts table
 
-data = {}
-root_name = "#{parsing.root.class.name}(#{parsing.root.value.inspect})"
-data["#{root_name}"] = []
+root = parse.root
+root_name = "#{root.class.name}(#{root.value.inspect})"
 
-puts parsing.root.nodes.map(&:inspect).join("\n")
+def nodify(graph, parent, nodes)
+  nodes.each do |node|
+    graph.add_edge(parent.inspect, node.inspect)
+
+    nodify(graph, node, node.nodes) if node.nodes.present?
+  end
+end
+
+graph = RGL::DirectedAdjacencyGraph.new
+root.nodes.each do |node|
+  graph.add_edge(root_name, node.inspect)
+  nodify(graph, node, node.nodes)
+end
+
+graph.write_to_graphic_file('jpg', 'parse')
+`open parse.jpg`
 # Fim da Exibição

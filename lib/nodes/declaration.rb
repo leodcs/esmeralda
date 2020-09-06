@@ -6,5 +6,9 @@ module Nodes
       @value = value
       @type = type
     end
+
+    def nodes
+      []
+    end
   end
 end
