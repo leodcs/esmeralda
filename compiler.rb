@@ -48,5 +48,5 @@ root.nodes.each do |node|
   nodify(graph, node, node.nodes)
 end
 
-graph.write_to_graphic_file('png', 'parse')
+graph.to_undirected.write_to_graphic_file('png', 'parse', { 'vertex' => { 'fontsize' => 15 }})
 # Fim da Exibição

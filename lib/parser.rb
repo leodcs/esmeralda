@@ -104,20 +104,24 @@ class Parser
   def condicional
     return unless peek(:IF)
 
+    nodes = []
     consume(:IF)
     consume(:ABRE_PAREN)
-    nodes = [expr_relacional]
+    if_body = expr_relacional
+    nodes << if_body
     consume(:FECHA_PAREN)
     consume(:THEN)
 
-    comando!
+    nodes << comando!
 
+    else_body = nil
     if peek(:ELSE)
       consume(:ELSE)
-      comando!
+      else_body = comando!
+      nodes << else_body
     end
 
-    return Nodes::Conditional.new(nodes)
+    return Nodes::Conditional.new(if_body, else_body, nodes)
   end
 
   def expr_relacional
@@ -175,12 +179,12 @@ class Parser
   end
 
   def atribuicao!
-    consume(:ID)
+    identifier = consume(:ID).match
     consume(:DPI)
     nodes = expr_arit!
     consume(:PONTO_VIRGULA)
 
-    return Nodes::Assignment.new(nodes)
+    return Nodes::Assignment.new(identifier, nodes)
   end
 
   def expr_arit!

@@ -7,5 +7,7 @@ Begin
 
     if (x > y) then
       x := y;
+    else
+      y := x;
   end;
 end.

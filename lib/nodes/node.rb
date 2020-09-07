@@ -14,11 +14,13 @@ module Nodes
       object_name = "#{self.class.name}:#{object_id}"
 
       if respond_to?(:value) && respond_to?(:type)
-        "#{object_name} \n (#{value} - #{type})"
+        "#{object_name} \n #{value} - #{type}"
       elsif respond_to?(:value)
-        "#{object_name} \n (#{value})"
+        "#{object_name} \n #{value}"
       elsif respond_to?(:operator)
-        "#{object_name} \n (#{operator})"
+        "#{object_name} \n #{operator}"
+      elsif respond_to?(:assignment)
+        "#{object_name} \n #{assignment}"
       else
         object_name
       end
