@@ -1,13 +1,9 @@
 module Nodes
-  class Id
+  class Id < Node
     attr_reader :value
 
-    def initialize(value)
+    def initialize(value, nodes = [])
       @value = value
-    end
-
-    def nodes
-      []
     end
   end
 end

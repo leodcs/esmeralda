@@ -1,10 +1,11 @@
 module Nodes
-  class Expression
-    attr_reader :operator, :nodes
+  class Expression < Node
+    attr_reader :operator
 
     def initialize(operator, nodes = [])
       @operator = operator
-      @nodes = nodes
+
+      super(nodes)
     end
   end
 end

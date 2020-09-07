@@ -1,9 +1,4 @@
 module Nodes
-  class Block
-    attr_reader :nodes
-
-    def initialize(nodes = [])
-      @nodes = nodes
-    end
+  class Block < Node
   end
 end

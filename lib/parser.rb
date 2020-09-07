@@ -93,7 +93,7 @@ class Parser
   end
 
   def comando(options = {})
-    value = comando_basico || iteracao || condicional
+    value = comando_basico || condicional
 
     raise_if_required(value, options, [:ID, :WHILE, :REPEAT, :IF])
   end
@@ -110,7 +110,9 @@ class Parser
     nodes = [expr_relacional]
     consume(:FECHA_PAREN)
     consume(:THEN)
-    comando
+
+    comando!
+
     if peek(:ELSE)
       consume(:ELSE)
       comando!
@@ -123,7 +125,7 @@ class Parser
     # TODO: segunda parte da gramatica
     nodes = []
     nodes << val!
-    operador = consume(:OP_RELACIONAL)
+    operador = consume(:OP_RELACIONAL).match
     nodes << val!
 
     return Nodes::Expression.new(operador, nodes)
@@ -142,7 +144,7 @@ class Parser
   def id
     return unless peek(:ID)
 
-    value = consume(:ID)
+    value = consume(:ID).match
 
     return Nodes::Id.new(value)
   end
@@ -150,7 +152,7 @@ class Parser
   def integer
     return unless peek(:INTEGER)
 
-    value = consume(:INTEGER)
+    value = consume(:INTEGER).match
 
     return Nodes::Integer.new(value)
   end
@@ -158,7 +160,7 @@ class Parser
   def real
     return unless peek(:REAL)
 
-    value = consume(:REAL)
+    value = consume(:REAL).match
 
     return Nodes::Real.new(value)
   end

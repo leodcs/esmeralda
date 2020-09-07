@@ -3,6 +3,7 @@ Dir['./config/**/*.rb'].sort.each { |config| require config }
 require './lib/token'
 require './lib/scanner'
 require './lib/parser'
+require './lib/nodes/node'
 Dir['./lib/nodes/*.rb'].sort.each { |node| require node }
 
 # Debugging
@@ -32,11 +33,10 @@ table = Terminal::Table.new(headings: cabecalhos, rows: tabela_lexica_as_h)
 puts table
 
 root = parse.root
-root_name = "#{root.class.name}(#{root.value.inspect})"
 
 def nodify(graph, parent, nodes)
   nodes.each do |node|
-    graph.add_edge(parent.inspect, node.inspect)
+    graph.add_edge(parent.debug_name, node.debug_name)
 
     nodify(graph, node, node.nodes) if node.nodes.present?
   end
@@ -44,10 +44,9 @@ end
 
 graph = RGL::DirectedAdjacencyGraph.new
 root.nodes.each do |node|
-  graph.add_edge(root_name, node.inspect)
+  graph.add_edge(root.debug_name, node.debug_name)
   nodify(graph, node, node.nodes)
 end
 
-graph.write_to_graphic_file('jpg', 'parse')
-`open parse.jpg`
+graph.write_to_graphic_file('png', 'parse')
 # Fim da Exibição

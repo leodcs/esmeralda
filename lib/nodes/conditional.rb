@@ -1,9 +1,4 @@
 module Nodes
-  class Conditional
-    attr_reader :nodes
-
-    def initialize(nodes = [])
-      @nodes = nodes
-    end
+  class Conditional < Node
   end
 end

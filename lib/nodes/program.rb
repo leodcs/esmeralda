@@ -1,10 +1,11 @@
 module Nodes
-  class Program
-    attr_reader :value, :nodes
+  class Program < Node
+    attr_reader :value
 
     def initialize(value, nodes = [])
       @value = value
-      @nodes = nodes
+
+      super(nodes)
     end
   end
 end

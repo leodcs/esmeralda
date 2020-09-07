@@ -1,13 +1,11 @@
 module Nodes
-  class Real
+  class Real < Node
     attr_reader :value
 
-    def initialize(value)
+    def initialize(value, nodes = [])
       @value = value
-    end
 
-    def nodes
-      []
+      super(nodes)
     end
   end
 end
