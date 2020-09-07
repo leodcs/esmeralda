@@ -11,16 +11,16 @@ module Nodes
     end
 
     def debug_name
-      class_name = self.class.name
+      object_name = "#{self.class.name}:#{object_id}"
 
       if respond_to?(:value) && respond_to?(:type)
-        "#{class_name} (#{value} - #{type})"
+        "#{object_name} \n (#{value} - #{type})"
       elsif respond_to?(:value)
-        "#{class_name} (#{value})"
+        "#{object_name} \n (#{value})"
       elsif respond_to?(:operator)
-        "#{class_name} (#{operator})"
+        "#{object_name} \n (#{operator})"
       else
-        class_name
+        object_name
       end
     end
   end

@@ -36,10 +36,9 @@ class Parser
   end
 
   def consume(expected_type)
-    token = @tokens[0]
+    token = @tokens.shift
 
     if token.present? && token.type == expected_type
-      @tokens.shift
       return token
     elsif token.nil?
       # TODO: pegar linha e coluna para esse erro. Possivel solucao: ler EOF como um token
@@ -131,14 +130,14 @@ class Parser
     return Nodes::Expression.new(operador, nodes)
   end
 
+  def val!
+    val(required: true)
+  end
+
   def val(options = {})
     value = id || integer || real
 
     raise_if_required(value, options, [:ID, :INTEGER, :REAL])
-  end
-
-  def val!
-    val(required: true)
   end
 
   def id
@@ -184,22 +183,25 @@ class Parser
     return Nodes::Assignment.new(nodes)
   end
 
-  def expr_arit(options = {})
-    value = val || op_arit || multi_arit
-
-    raise_if_required(value, options, [:ID, :INTEGER, :REAL, :ABRE_PAREN])
-  end
-
   def expr_arit!
     expr_arit(required: true)
   end
 
-  def op_arit
-    return unless val
+  def expr_arit(options = {})
+    value = multi_arit || op_arit || val
 
-    val
-    consume(:OP_ARITMETICO)
-    val
+    raise_if_required(value, options, [:ID, :INTEGER, :REAL, :ABRE_PAREN])
+  end
+
+  def op_arit
+    if peek(:ID, :OP_ARITMETICO) || peek(:INTEGER, :OP_ARITMETICO) || peek(:REAL, :OP_ARITMETICO)
+      nodes = []
+      nodes << val
+      operator = consume(:OP_ARITMETICO).match
+      nodes << val
+
+      return Nodes::Operation.new(operator, nodes)
+    end
   end
 
   def multi_arit

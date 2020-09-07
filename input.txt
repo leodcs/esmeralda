@@ -1,9 +1,11 @@
 Program teste;
-  String a;
-  Integer x;
-  real y;
+  Integer x, y;
 Begin
   Begin
-    x := 1;
+    x := 1 + 2;
+    y := 3 + 4;
+
+    if (x > y) then
+      x := y;
   end;
 end.
