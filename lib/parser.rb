@@ -61,9 +61,7 @@ class Parser
   end
 
   def comando!
-    proximos_esperados = [:ID, :WHILE, :REPEAT, :IF]
-
-    obrigatorio(:comando, proximos_esperados)
+    obrigatorio(:comando, [:ID, :WHILE, :REPEAT, :IF])
   end
 
   def condicional
@@ -106,15 +104,13 @@ class Parser
   end
 
   def val!
-    proximos_esperados = [:ID, :INTEGER, :REAL]
-
-    obrigatorio(:val, proximos_esperados)
+    obrigatorio(:val, [:ID, :INTEGER, :REAL])
   end
 
   def id
     if proximo?(:ID)
       value = consome(:ID).match
-      return Nodes::Id.new(value)
+      return Nodes::Identifier.new(value)
     end
   end
 
@@ -148,15 +144,11 @@ class Parser
   end
 
   def atribuicao!
-    proximos_esperados = [:ID]
-
-    obrigatorio(:atribuicao, proximos_esperados)
+    obrigatorio(:atribuicao, :ID)
   end
 
   def expr_arit!
-    proximos_esperados = [:ID, :INTEGER, :REAL, :ABRE_PAREN]
-
-    obrigatorio(:expr_arit, proximos_esperados)
+    obrigatorio(:expr_arit, [:ID, :INTEGER, :REAL, :ABRE_PAREN])
   end
 
   def expr_arit
