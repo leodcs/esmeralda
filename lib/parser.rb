@@ -9,7 +9,7 @@ class Parser
   def parse
     # Parsing starts here
 
-    # ignora_comentarios # TODO: metodo para ignorar comentarios
+    # TODO: metodo para ignorar comentarios (antes de comecar o parsing)
     programa
 
     self
@@ -21,102 +21,64 @@ class Parser
 
   private
 
-  def peek(*expected_types)
-    upcoming = @tokens[0, expected_types.size]
-
-    if upcoming.map(&:type) == expected_types
-      return upcoming
-    end
-  end
-
-  def expect(*expected_types)
-    if (tokens = peek(expected_types))
-      @tokens = @tokens.drop(tokens.size)
-    end
-  end
-
-  def consume(expected_type)
-    token = @tokens.shift
-
-    if token.present? && token.type == expected_type
-      return token
-    elsif token.nil?
-      # TODO: pegar linha e coluna para esse erro. Possivel solucao: ler EOF como um token
-      raise_syntax_error("", expected_type)
-    else
-      raise_syntax_error(token.match, expected_type, token.linha, token.coluna)
-    end
-  end
-
-  def raise_if_required(value, options, expected_types)
-    if value.present?
-      return value
-    elsif options[:required]
-      token = @tokens.shift
-      raise_syntax_error(token.match, expected_types, token.linha, token.coluna)
-    end
-  end
-
   def programa
     @programa ||= bloco_principal
   end
 
   def bloco_principal
-    consume(:PROGRAM)
-    prog_name = consume(:ID).match
-    consume(:PONTO_VIRGULA)
+    consome(:PROGRAM)
+    prog_name = consome(:ID).match
+    consome(:PONTO_VIRGULA)
 
     declarations = declaracoes
     @declarations += declarations
 
-    consume(:BEGIN)
+    consome(:BEGIN)
     body = bloco
-    consume(:END)
-    consume(:PONTO)
+    consome(:END)
+    consome(:PONTO)
 
     nodes = declarations + [body]
     return Nodes::Program.new(prog_name, nodes)
   end
 
   def bloco
-    consume(:BEGIN)
+    consome(:BEGIN)
     nodes = comandos
-    consume(:END)
-    consume(:PONTO_VIRGULA)
+    consome(:END)
+    consome(:PONTO_VIRGULA)
 
     return Nodes::Block.new(nodes)
   end
 
   def comandos
-    repeat(:comando)
+    repete(:comando)
   end
 
-  def comando(options = {})
-    value = comando_basico || condicional
-
-    raise_if_required(value, options, [:ID, :WHILE, :REPEAT, :IF])
+  def comando
+    comando_basico || condicional
   end
 
   def comando!
-    comando(required: true)
+    obrigatorio(:comando, [:ID, :WHILE, :REPEAT, :IF])
   end
 
   def condicional
-    return unless peek(:IF)
+    return unless proximo?(:IF)
 
     nodes = []
-    consume(:IF)
-    consume(:ABRE_PAREN)
+    consome(:IF)
+    consome(:ABRE_PAREN)
     if_body = expr_relacional
     nodes << if_body
-    consume(:FECHA_PAREN)
-    consume(:THEN)
+    consome(:FECHA_PAREN)
+    consome(:THEN)
 
     nodes << comando!
 
     else_body = nil
-    if peek(:ELSE)
-      consume(:ELSE)
+    if proximo?(:ELSE)
+      consome(:ELSE)
       else_body = comando!
       nodes << else_body
     end
@@ -128,44 +90,39 @@ class Parser
     # TODO: segunda parte da gramatica
     nodes = []
     nodes << val!
-    operador = consume(:OP_RELACIONAL).match
+    operador = consome(:OP_RELACIONAL).match
     nodes << val!
 
     return Nodes::Expression.new(operador, nodes)
   end
 
-  def val!
-    val(required: true)
+  def val
+    id || integer || real
   end
 
-  def val(options = {})
-    value = id || integer || real
-
-    raise_if_required(value, options, [:ID, :INTEGER, :REAL])
+  def val!
+    obrigatorio(:val, [:ID, :INTEGER, :REAL])
   end
 
   def id
-    return unless peek(:ID)
-
-    value = consume(:ID).match
-
-    return Nodes::Id.new(value)
+    if proximo?(:ID)
+      value = consome(:ID).match
+      return Nodes::Id.new(value)
+    end
   end
 
   def integer
-    return unless peek(:INTEGER)
-
-    value = consume(:INTEGER).match
-
-    return Nodes::Integer.new(value)
+    if proximo?(:INTEGER)
+      value = consome(:INTEGER).match
+      return Nodes::Integer.new(value)
+    end
   end
 
   def real
-    return unless peek(:REAL)
-
-    value = consume(:REAL).match
-
-    return Nodes::Real.new(value)
+    if proximo?(:REAL)
+      value = consome(:REAL).match
+      return Nodes::Real.new(value)
+    end
   end
 
   def comando_basico
@@ -173,35 +130,33 @@ class Parser
   end
 
   def atribuicao
-    return unless peek(:ID, :DPI)
+    return unless proximo?(:ID, :DPI)
 
-    atribuicao!
-  end
-
-  def atribuicao!
-    identifier = consume(:ID).match
-    consume(:DPI)
+    identifier = consome(:ID).match
+    consome(:DPI)
     nodes = expr_arit!
-    consume(:PONTO_VIRGULA)
+    consome(:PONTO_VIRGULA)
 
     return Nodes::Assignment.new(identifier, nodes)
   end
 
-  def expr_arit!
-    expr_arit(required: true)
+  def atribuicao!
+    obrigatorio(:atribuicao, [:ID])
   end
 
-  def expr_arit(options = {})
-    value = multi_arit || op_arit || val
+  def expr_arit!
+    obrigatorio(:expr_arit, [:ID, :INTEGER, :REAL, :ABRE_PAREN])
+  end
 
-    raise_if_required(value, options, [:ID, :INTEGER, :REAL, :ABRE_PAREN])
+  def expr_arit
+    multi_arit || op_arit || val
   end
 
   def op_arit
-    if peek(:ID, :OP_ARITMETICO) || peek(:INTEGER, :OP_ARITMETICO) || peek(:REAL, :OP_ARITMETICO)
+    if proximo?(:ID, :OP_ARITMETICO) || proximo?(:INTEGER, :OP_ARITMETICO) || proximo?(:REAL, :OP_ARITMETICO)
       nodes = []
       nodes << val
-      operator = consume(:OP_ARITMETICO).match
+      operator = consome(:OP_ARITMETICO).match
       nodes << val
 
       return Nodes::Operation.new(operator, nodes)
@@ -209,24 +164,74 @@ class Parser
   end
 
   def multi_arit
-    return unless peek(:ABRE_PAREN)
+    return unless proximo?(:ABRE_PAREN)
 
-    consume(:ABRE_PAREN)
+    consome(:ABRE_PAREN)
     expr_arit
-    consume(:FECHA_PAREN)
+    consome(:FECHA_PAREN)
 
-    consume(:OP_ARITMETICO)
+    consome(:OP_ARITMETICO)
 
-    consume(:ABRE_PAREN)
+    consome(:ABRE_PAREN)
     expr_arit
-    consume(:FECHA_PAREN)
+    consome(:FECHA_PAREN)
   end
 
   def iteracao
     # TODO
   end
 
-  def repeat(method)
+  def declaracoes
+    repete(:declaracao)
+  end
+
+  def declaracao
+    return unless proximo?(:TIPO_VAR)
+
+    var_names = []
+    type = consome(:TIPO_VAR).match
+    var_names << consome(:ID).match
+
+    while proximo?(:VIRGULA) do
+      consome(:VIRGULA)
+      var_names << consome(:ID).match
+    end
+
+    consome(:PONTO_VIRGULA)
+
+    return Nodes::Declaration.new(var_names, type)
+  end
+
+  ##### Helper methods
+
+  def proximo?(*expected_types)
+    upcoming = @tokens[0, expected_types.size]
+
+    return upcoming.map(&:type) == expected_types
+  end
+
+  def consome(expected_type)
+    token = @tokens.shift
+
+    if token.present? && token.type == expected_type
+      return token
+    elsif token.nil?
+      # TODO: pegar linha e coluna para esse erro. Possivel solucao: ler EOF como um token
+      raise_syntax_error("", expected_type)
+    else
+      erro_sintatico(expected_type, token)
+    end
+  end
+
+  def obrigatorio(method, expected_types)
+    if (value = send(method))
+      return value
+    else
+      erro_sintatico(expected_types)
+    end
+  end
+
+  def repete(method)
     results = []
 
     while (result = send(method)) do
@@ -236,25 +241,9 @@ class Parser
     return results
   end
 
-  def declaracoes
-    repeat(:declaracao)
-  end
-
-  def declaracao
-    return unless peek(:TIPO_VAR)
-
-    var_names = []
-    type = consume(:TIPO_VAR).match
-    var_names << consume(:ID).match
-
-    while peek(:VIRGULA) do
-      consume(:VIRGULA)
-      var_names << consume(:ID).match
-    end
-
-    consume(:PONTO_VIRGULA)
-
-    return Nodes::Declaration.new(var_names, type)
+  def erro_sintatico(expected_types, token = nil)
+    token ||= @tokens.shift
+    raise_syntax_error(token.match, expected_types, token.linha, token.coluna)
   end
 
   def raise_syntax_error(current_token, expected_types, line = 'XX', column = 'YY')
