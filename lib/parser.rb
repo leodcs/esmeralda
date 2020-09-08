@@ -39,6 +39,7 @@ class Parser
     consome(:PONTO)
 
     nodes = declarations + [body]
+
     return Nodes::Program.new(prog_name, nodes)
   end
 
@@ -60,7 +61,9 @@ class Parser
   end
 
   def comando!
-    obrigatorio(:comando, [:ID, :WHILE, :REPEAT, :IF])
+    proximos_esperados = [:ID, :WHILE, :REPEAT, :IF]
+
+    obrigatorio(:comando, proximos_esperados)
   end
 
   def condicional
@@ -69,8 +72,10 @@ class Parser
     nodes = []
     consome(:IF)
     consome(:ABRE_PAREN)
+
     if_body = expr_relacional
     nodes << if_body
+
     consome(:FECHA_PAREN)
     consome(:THEN)
 
@@ -101,7 +106,9 @@ class Parser
   end
 
   def val!
-    obrigatorio(:val, [:ID, :INTEGER, :REAL])
+    proximos_esperados = [:ID, :INTEGER, :REAL]
+
+    obrigatorio(:val, proximos_esperados)
   end
 
   def id
@@ -141,11 +148,15 @@ class Parser
   end
 
   def atribuicao!
-    obrigatorio(:atribuicao, [:ID])
+    proximos_esperados = [:ID]
+
+    obrigatorio(:atribuicao, proximos_esperados)
   end
 
   def expr_arit!
-    obrigatorio(:expr_arit, [:ID, :INTEGER, :REAL, :ABRE_PAREN])
+    proximos_esperados = [:ID, :INTEGER, :REAL, :ABRE_PAREN]
+
+    obrigatorio(:expr_arit, proximos_esperados)
   end
 
   def expr_arit
@@ -155,9 +166,9 @@ class Parser
   def op_arit
     if proximo?(:ID, :OP_ARITMETICO) || proximo?(:INTEGER, :OP_ARITMETICO) || proximo?(:REAL, :OP_ARITMETICO)
       nodes = []
-      nodes << val
+      nodes << val!
       operator = consome(:OP_ARITMETICO).match
-      nodes << val
+      nodes << val!
 
       return Nodes::Operation.new(operator, nodes)
     end
@@ -204,22 +215,25 @@ class Parser
 
   ##### Helper methods
 
-  def proximo?(*expected_types)
-    upcoming = @tokens[0, expected_types.size]
-
-    return upcoming.map(&:type) == expected_types
+  def proximo?(*tipos_esperados)
+    proximos = proximos(tipos_esperados.size)
+    return proximos.map(&:type) == tipos_esperados
   end
 
-  def consome(expected_type)
+  def proximos(n)
+    @tokens[0, n]
+  end
+
+  def consome(tipo_esperado)
     token = @tokens.shift
 
-    if token.present? && token.type == expected_type
+    if token.present? && token.type == tipo_esperado
       return token
     elsif token.nil?
       # TODO: pegar linha e coluna para esse erro. Possivel solucao: ler EOF como um token
-      raise_syntax_error("", expected_type)
+      raise_syntax_error("", tipo_esperado)
     else
-      erro_sintatico(expected_type, token)
+      erro_sintatico(tipo_esperado, token)
     end
   end
 
@@ -242,7 +256,7 @@ class Parser
   end
 
   def erro_sintatico(expected_types, token = nil)
-    token ||= @tokens.shift
+    token ||= @tokens.first
     raise_syntax_error(token.match, expected_types, token.linha, token.coluna)
   end
 
