@@ -22,8 +22,11 @@
 
 <val> ::= <id> | <integer> | <real>
 
-<expr_relacional> ::= <val> <op_relacionais> <val>
-			| (<expr_relacional>) [<op_booleanos> (<expr_relacional>)]*
+<expr_relacional> ::= <op_relacional> | <multi_op_relacional>
+
+<multi_op_relacional> ::= (<expr_relacional>) [<op_booleanos> (<expr_relacional>)]*
+
+<op_relacional> ::= <val> <op_relacionais> <val>
 
 <expr_arit> ::= <val> | <op_arit> | multi_arit
 

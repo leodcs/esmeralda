@@ -71,7 +71,7 @@ class Parser
     consome(:IF)
     consome(:ABRE_PAREN)
 
-    if_body = expr_relacional
+    if_body = expr_relacional!
     nodes << if_body
 
     consome(:FECHA_PAREN)
@@ -90,7 +90,34 @@ class Parser
   end
 
   def expr_relacional
-    # TODO: segunda parte da gramatica
+    op_relacional || multi_op_relacional
+  end
+
+  def expr_relacional!
+    obrigatorio(:expr_relacional, [:ID, :INTEGER, :REAL, :ABRE_PAREN])
+  end
+
+  def multi_op_relacional
+    return unless proximo?(:ABRE_PAREN)
+
+    expressions = []
+    consome(:ABRE_PAREN)
+    expressions << expr_relacional
+    consome(:FECHA_PAREN)
+
+    while proximo?(:OP_BOOLEANO) do
+      operator = consome(:OP_BOOLEANO).match
+      consome(:ABRE_PAREN)
+      expressions << expr_relacional
+      consome(:FECHA_PAREN)
+    end
+
+    return Nodes::Expression.new(operator, expressions)
+  end
+
+  def op_relacional
+    return unless proximo?(:ID, :OP_RELACIONAL) || proximo?(:INTEGER, :OP_RELACIONAL) || proximo?(:REAL, :OP_RELACIONAL)
+
     nodes = []
     nodes << val!
     operador = consome(:OP_RELACIONAL).match
@@ -108,24 +135,24 @@ class Parser
   end
 
   def id
-    if proximo?(:ID)
-      value = consome(:ID).match
-      return Nodes::Identifier.new(value)
-    end
+    return unless proximo?(:ID)
+
+    value = consome(:ID).match
+    return Nodes::Identifier.new(value)
   end
 
   def integer
-    if proximo?(:INTEGER)
-      value = consome(:INTEGER).match
-      return Nodes::Integer.new(value)
-    end
+    return unless proximo?(:INTEGER)
+
+    value = consome(:INTEGER).match
+    return Nodes::Integer.new(value)
   end
 
   def real
-    if proximo?(:REAL)
-      value = consome(:REAL).match
-      return Nodes::Real.new(value)
-    end
+    return unless proximo?(:REAL)
+
+    value = consome(:REAL).match
+    return Nodes::Real.new(value)
   end
 
   def comando_basico
@@ -156,14 +183,14 @@ class Parser
   end
 
   def op_arit
-    if proximo?(:ID, :OP_ARITMETICO) || proximo?(:INTEGER, :OP_ARITMETICO) || proximo?(:REAL, :OP_ARITMETICO)
-      nodes = []
-      nodes << val!
-      operator = consome(:OP_ARITMETICO).match
-      nodes << val!
+    return unless proximo?(:ID, :OP_ARITMETICO) || proximo?(:INTEGER, :OP_ARITMETICO) || proximo?(:REAL, :OP_ARITMETICO)
 
-      return Nodes::Operation.new(operator, nodes)
-    end
+    nodes = []
+    nodes << val!
+    operator = consome(:OP_ARITMETICO).match
+    nodes << val!
+
+    return Nodes::Operation.new(operator, nodes)
   end
 
   def multi_arit
@@ -209,6 +236,7 @@ class Parser
 
   def proximo?(*tipos_esperados)
     proximos = proximos(tipos_esperados.size)
+
     return proximos.map(&:type) == tipos_esperados
   end
 

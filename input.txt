@@ -5,7 +5,7 @@ Begin
     x := 1 + 2;
     y := 3 + 4;
 
-    if (x > y) then
+    if ((x > y) or (1  > 2) or (4 < 5)) then
       x := y;
     else
       y := x;
