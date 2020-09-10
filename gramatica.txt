@@ -16,7 +16,7 @@
 <comando_basico> ::= <atribuicao>
                      | <bloco>
                      | All ( <id>  [, <id>]* );
-<atribuicao> ::= <id> := <expr_arit> ;
+<atribuicao> ::= <id> := <expr_arit>;
 <iteracao> ::= while (<expr_relacional>) do <comando>
                | repeat <comando> until (<expr_relacional>) ;
 
@@ -28,7 +28,7 @@
 
 <op_relacional> ::= <val> <op_relacionais> <val>
 
-<expr_arit> ::= <val> | <op_arit> | multi_arit
+<expr_arit> ::= <val> | <op_arit> | <multi_arit>
 
 <op_arit> ::= <val> <op_aritmetico> <val>
 <multi_arit> ::= (<expr_arit>) <op_aritmetico> (<expr_arit>)

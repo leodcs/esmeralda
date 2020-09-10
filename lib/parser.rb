@@ -27,7 +27,7 @@ class Parser
 
   def bloco_principal
     consome(:PROGRAM)
-    prog_name = consome(:ID).match
+    prog_name = consome(:ID)
     consome(:PONTO_VIRGULA)
 
     declarations = declaracoes
@@ -106,7 +106,7 @@ class Parser
     consome(:FECHA_PAREN)
 
     while proximo?(:OP_BOOLEANO) do
-      operator = consome(:OP_BOOLEANO).match
+      operator = consome(:OP_BOOLEANO)
       consome(:ABRE_PAREN)
       expressions << expr_relacional
       consome(:FECHA_PAREN)
@@ -120,7 +120,7 @@ class Parser
 
     nodes = []
     nodes << val!
-    operador = consome(:OP_RELACIONAL).match
+    operador = consome(:OP_RELACIONAL)
     nodes << val!
 
     return Nodes::Expression.new(operador, nodes)
@@ -137,21 +137,21 @@ class Parser
   def id
     return unless proximo?(:ID)
 
-    value = consome(:ID).match
+    value = consome(:ID)
     return Nodes::Identifier.new(value)
   end
 
   def integer
     return unless proximo?(:INTEGER)
 
-    value = consome(:INTEGER).match
+    value = consome(:INTEGER)
     return Nodes::Integer.new(value)
   end
 
   def real
     return unless proximo?(:REAL)
 
-    value = consome(:REAL).match
+    value = consome(:REAL)
     return Nodes::Real.new(value)
   end
 
@@ -162,7 +162,7 @@ class Parser
   def atribuicao
     return unless proximo?(:ID, :DPI)
 
-    identifier = consome(:ID).match
+    identifier = consome(:ID)
     consome(:DPI)
     nodes = expr_arit!
     consome(:PONTO_VIRGULA)
@@ -174,12 +174,12 @@ class Parser
     obrigatorio(:atribuicao, :ID)
   end
 
-  def expr_arit!
-    obrigatorio(:expr_arit, [:ID, :INTEGER, :REAL, :ABRE_PAREN])
-  end
-
   def expr_arit
     multi_arit || op_arit || val
+  end
+
+  def expr_arit!
+    obrigatorio(:expr_arit, [:ID, :INTEGER, :REAL, :ABRE_PAREN])
   end
 
   def op_arit
@@ -187,7 +187,7 @@ class Parser
 
     nodes = []
     nodes << val!
-    operator = consome(:OP_ARITMETICO).match
+    operator = consome(:OP_ARITMETICO)
     nodes << val!
 
     return Nodes::Operation.new(operator, nodes)
@@ -196,15 +196,18 @@ class Parser
   def multi_arit
     return unless proximo?(:ABRE_PAREN)
 
+    nodes = []
     consome(:ABRE_PAREN)
-    expr_arit
+    nodes << expr_arit
     consome(:FECHA_PAREN)
 
-    consome(:OP_ARITMETICO)
+    operador = consome(:OP_ARITMETICO)
 
     consome(:ABRE_PAREN)
-    expr_arit
+    nodes << expr_arit
     consome(:FECHA_PAREN)
+
+    return Nodes::Expression.new(operador, nodes)
   end
 
   def iteracao
@@ -219,12 +222,12 @@ class Parser
     return unless proximo?(:TIPO_VAR)
 
     var_names = []
-    type = consome(:TIPO_VAR).match
-    var_names << consome(:ID).match
+    type = consome(:TIPO_VAR)
+    var_names << consome(:ID)
 
     while proximo?(:VIRGULA) do
       consome(:VIRGULA)
-      var_names << consome(:ID).match
+      var_names << consome(:ID)
     end
 
     consome(:PONTO_VIRGULA)
@@ -248,7 +251,7 @@ class Parser
     token = @tokens.shift
 
     if token.present? && token.type == tipo_esperado
-      return token
+      return token.match
     elsif token.nil?
       # TODO: pegar linha e coluna para esse erro. Possivel solucao: ler EOF como um token
       raise_syntax_error("", tipo_esperado)
