@@ -30,7 +30,8 @@ class Token
   end
 
   def Token.types
-    { :PROGRAM => /\bPROGRAM\b/,
+    { :ALL => /\bALL\b/,
+      :PROGRAM => /\bPROGRAM\b/,
       :BEGIN => /\bBEGIN\b/,
       :END => /\bEND\b/,
       :IF => /\bIF\b/,

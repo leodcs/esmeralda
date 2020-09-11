@@ -5,6 +5,12 @@ Begin
     x := 1 + 2;
     y := 3 + 4;
 
-    z := ((1 + 2) * (12398123.123 - 8923)) / (100);
+    if (x < 3) then
+      BEGIN
+        x := 4;
+        all(x, y);
+      END;
+    else
+      z := 5;
   end;
 end.

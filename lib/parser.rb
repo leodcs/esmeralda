@@ -34,7 +34,7 @@ class Parser
     @declarations += declarations
 
     consome(:BEGIN)
-    body = bloco
+    body = bloco!
     consome(:END)
     consome(:PONTO)
 
@@ -44,6 +44,8 @@ class Parser
   end
 
   def bloco
+    return unless proximo?(:BEGIN)
+
     consome(:BEGIN)
     nodes = comandos
     consome(:END)
@@ -52,8 +54,12 @@ class Parser
     return Nodes::Block.new(nodes)
   end
 
+  def bloco!
+    obriga_presenca_de(:bloco, :BEGIN)
+  end
+
   def comandos
-    repete(:comando)
+    varios(:comando)
   end
 
   def comando
@@ -61,7 +67,7 @@ class Parser
   end
 
   def comando!
-    obrigatorio(:comando, [:ID, :WHILE, :REPEAT, :IF])
+    obriga_presenca_de(:comando, [:ID, :WHILE, :REPEAT, :IF])
   end
 
   def condicional
@@ -94,7 +100,7 @@ class Parser
   end
 
   def expr_relacional!
-    obrigatorio(:expr_relacional, [:ID, :INTEGER, :REAL, :ABRE_PAREN])
+    obriga_presenca_de(:expr_relacional, [:ID, :INTEGER, :REAL, :ABRE_PAREN])
   end
 
   def multi_op_relacional
@@ -131,7 +137,7 @@ class Parser
   end
 
   def val!
-    obrigatorio(:val, [:ID, :INTEGER, :REAL])
+    obriga_presenca_de(:val, [:ID, :INTEGER, :REAL])
   end
 
   def id
@@ -156,7 +162,26 @@ class Parser
   end
 
   def comando_basico
-    atribuicao # || bloco || All ( <id>  [, <id>]* );
+    atribuicao || bloco || comando_all
+  end
+
+  def comando_all
+    return unless proximo?(:ALL)
+
+    params = []
+    method_name = consome(:ALL)
+    consome(:ABRE_PAREN)
+    params << Nodes::Identifier.new(consome(:ID))
+
+    while proximo?(:VIRGULA) do
+      consome(:VIRGULA)
+      params << Nodes::Identifier.new(consome(:ID))
+    end
+
+    consome(:FECHA_PAREN)
+    consome(:PONTO_VIRGULA)
+
+    return Nodes::Call.new(method_name, params)
   end
 
   def atribuicao
@@ -171,7 +196,7 @@ class Parser
   end
 
   def atribuicao!
-    obrigatorio(:atribuicao, :ID)
+    obriga_presenca_de(:atribuicao, :ID)
   end
 
   def expr_arit
@@ -179,7 +204,7 @@ class Parser
   end
 
   def expr_arit!
-    obrigatorio(:expr_arit, [:ID, :INTEGER, :REAL, :ABRE_PAREN])
+    obriga_presenca_de(:expr_arit, [:ID, :INTEGER, :REAL, :ABRE_PAREN])
   end
 
   def op_arit
@@ -215,7 +240,7 @@ class Parser
   end
 
   def declaracoes
-    repete(:declaracao)
+    varios(:declaracao)
   end
 
   def declaracao
@@ -260,7 +285,7 @@ class Parser
     end
   end
 
-  def obrigatorio(method, expected_types)
+  def obriga_presenca_de(method, expected_types)
     if (value = send(method))
       return value
     else
@@ -268,14 +293,14 @@ class Parser
     end
   end
 
-  def repete(method)
-    results = []
+  def varios(metodo)
+    resultados = []
 
-    while (result = send(method)) do
-      results << result
+    while (resultado = send(metodo)) do
+      resultados << resultado
     end
 
-    return results
+    return resultados
   end
 
   def erro_sintatico(expected_types, token = nil)

@@ -1,22 +1,25 @@
 <comentario> ::= { '*******' }
 
-<Programa> ::= <bloco_principal>
+<programa> ::= <bloco_principal>
 
-<bloco_principal> ::= Program <id>; [<decl_var>]* Begin <bloco> End.
+<bloco_principal> ::= program <id>; [<decl_var>]* Begin <bloco> end.
 
 <decl_var> ::= <tipo> <id> [,<id>]*;
-<tipo> ::= integer | real | string
 
-<bloco> ::= Begin [<comando>  [ <comando>]*]* End ;
+<tipo> ::= INTEGER | REAL | STRING
+
+<bloco> ::= Begin [<comando>  [ <comando>]*]* end ;
 
 <comando> ::= <comando_basico> | <iteracao> | <condicional> ;
 
 <condicional> ::= if (<expr_relacional>) then <comando> [else <comando>]*
 
-<comando_basico> ::= <atribuicao>
-                     | <bloco>
-                     | All ( <id>  [, <id>]* );
+<comando_basico> ::= <atribuicao> | <bloco> | <comando_all>
+
+<comando_all> ::= All ( <id>  [, <id>]* );
+
 <atribuicao> ::= <id> := <expr_arit>;
+
 <iteracao> ::= while (<expr_relacional>) do <comando>
                | repeat <comando> until (<expr_relacional>) ;
 
@@ -30,5 +33,6 @@
 
 <expr_arit> ::= <val> | <op_arit> | <multi_arit>
 
-<op_arit> ::= <val> <op_aritmetico> <val>
-<multi_arit> ::= (<expr_arit>) <op_aritmetico> (<expr_arit>)
+<op_arit> ::= <val> OP_ARITMETICO <val>
+
+<multi_arit> ::= (<expr_arit>) OP_ARITMETICO (<expr_arit>)

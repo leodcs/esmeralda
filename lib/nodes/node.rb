@@ -11,19 +11,22 @@ module Nodes
     end
 
     def debug_name
-      object_name = "#{self.class.name}:#{object_id}"
+      object_name = "#{self.class.name}:#{object_id} \n"
 
-      if respond_to?(:value) && respond_to?(:type)
-        "#{object_name} \n #{value} - #{type}"
-      elsif respond_to?(:value)
-        "#{object_name} \n #{value}"
-      elsif respond_to?(:operator)
-        "#{object_name} \n #{operator}"
-      elsif respond_to?(:assignment)
-        "#{object_name} \n #{assignment}"
-      else
-        object_name
-      end
+      node_debug = case self.class.name.split('::').last
+                   when 'Declaration'
+                     "#{value} - #{type}"
+                   when 'Program', 'Integer', 'Real', 'Identifier'
+                     "#{value}"
+                   when 'Operation'
+                     "#{operator}"
+                   when 'Assignment'
+                     "#{assignment}"
+                   when 'Call'
+                     "#{method_name} (#{params.map(&:value).join(', ')})"
+                   end
+
+      return object_name + node_debug.to_s
     end
   end
 end
