@@ -17,11 +17,11 @@ module Nodes
                    when 'Declaration'
                      "#{value} - #{type}"
                    when 'Program', 'Integer', 'Real', 'Identifier'
-                     "#{value}"
+                     value
                    when 'Operation'
-                     "#{operator}"
+                     operator
                    when 'Assignment'
-                     "#{assignment}"
+                     assignment
                    when 'Call'
                      "#{method_name} (#{params.map(&:value).join(', ')})"
                    end

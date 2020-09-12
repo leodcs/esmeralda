@@ -1,16 +1,10 @@
 Program teste;
-  Integer x, y;
+  Integer x;
 Begin
   Begin
-    x := 1 + 2;
-    y := 3 + 4;
+    x := 4 + 5;
 
-    if (x < 3) then
-      BEGIN
-        x := 4;
-        all(x, y);
-      END;
-    else
-      z := 5;
+    while ((x > 1) and (3 > 4)) do
+      x :=  x - 1;
   end;
 end.

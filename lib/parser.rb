@@ -63,7 +63,7 @@ class Parser
   end
 
   def comando
-    comando_basico || condicional
+    comando_basico || iteracao || condicional
   end
 
   def comando!
@@ -88,8 +88,7 @@ class Parser
     else_body = nil
     if proximo?(:ELSE)
       consome(:ELSE)
-      else_body = comando!
-      nodes << else_body
+      nodes << else_body = comando!
     end
 
     return Nodes::Conditional.new(if_body, else_body, nodes)
@@ -118,7 +117,7 @@ class Parser
       consome(:FECHA_PAREN)
     end
 
-    return Nodes::Expression.new(operator, expressions)
+    return Nodes::MultiExpression.new(operator, expressions)
   end
 
   def op_relacional
@@ -223,20 +222,36 @@ class Parser
 
     nodes = []
     consome(:ABRE_PAREN)
-    nodes << expr_arit
+    nodes << expr_arit!
     consome(:FECHA_PAREN)
 
     operador = consome(:OP_ARITMETICO)
 
     consome(:ABRE_PAREN)
-    nodes << expr_arit
+    nodes << expr_arit!
     consome(:FECHA_PAREN)
 
     return Nodes::Expression.new(operador, nodes)
   end
 
   def iteracao
-    # TODO
+    itera_while || itera_repeat
+  end
+
+  def itera_while
+    return unless proximo?(:WHILE)
+
+    consome(:WHILE)
+    consome(:ABRE_PAREN)
+    expression = expr_relacional!
+    consome(:FECHA_PAREN)
+    consome(:DO)
+    nodes = comando
+
+    return Nodes::Iteration.new(expression, nodes)
+  end
+
+  def itera_repeat
   end
 
   def declaracoes

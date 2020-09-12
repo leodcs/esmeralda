@@ -20,8 +20,11 @@
 
 <atribuicao> ::= <id> := <expr_arit>;
 
-<iteracao> ::= while (<expr_relacional>) do <comando>
-               | repeat <comando> until (<expr_relacional>) ;
+<iteracao> ::= <itera_while> | <itera_repeat>
+
+<itera_while> ::= while (<expr_relacional>) do <comando>
+
+<itera_repeat> ::= repeat <comando> until (<expr_relacional>) ;
 
 <val> ::= <id> | <integer> | <real>
 

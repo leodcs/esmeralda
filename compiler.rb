@@ -34,22 +34,22 @@ table = Terminal::Table.new(headings: cabecalhos, rows: tabela_lexica_as_h)
 puts table
 
 begin
-root = parse.root
-def nodify(graph, parent, nodes)
-  nodes.each do |node|
-    graph.add_edge(parent.debug_name, node.debug_name)
+  root = parse.root
+  def nodify(graph, parent, nodes)
+    nodes.each do |node|
+      graph.add_edge(parent.debug_name, node.debug_name)
 
-    nodify(graph, node, node.nodes) if node.nodes.present?
+      nodify(graph, node, node.nodes) if node.nodes.present?
+    end
   end
-end
 
-graph = RGL::DirectedAdjacencyGraph.new
-root.nodes.each do |node|
-  graph.add_edge(root.debug_name, node.debug_name)
-  nodify(graph, node, node.nodes)
-end
+  graph = RGL::DirectedAdjacencyGraph.new
+  root.nodes.each do |node|
+    graph.add_edge(root.debug_name, node.debug_name)
+    nodify(graph, node, node.nodes)
+  end
 
-graph.write_to_graphic_file('png', 'parse', { 'vertex' => { 'fontsize' => 15 }})
+  graph.write_to_graphic_file('png', 'parse', { 'vertex' => { 'fontsize' => 15 }})
 rescue StandardError => e
   p e
   binding.pry
