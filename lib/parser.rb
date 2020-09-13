@@ -7,9 +7,6 @@ class Parser
   end
 
   def parse
-    # Parsing starts here
-
-    # TODO: metodo para ignorar comentarios (antes de comecar o parsing)
     programa
 
     self
@@ -303,9 +300,6 @@ class Parser
 
     if token.present? && token.type == tipo_esperado
       return token.match
-    elsif token.nil?
-      # TODO: pegar linha e coluna para esse erro. Possivel solucao: ler EOF como um token
-      raise_syntax_error("", tipo_esperado)
     else
       erro_sintatico(tipo_esperado, token)
     end
@@ -331,13 +325,11 @@ class Parser
 
   def erro_sintatico(expected_types, token = nil)
     token ||= @tokens.first
-    raise_syntax_error(token.match, expected_types, token.linha, token.coluna)
-  end
-
-  def raise_syntax_error(current_token, expected_types, line = 'XX', column = 'YY')
     expected_types = expected_types.join(' ou ') if expected_types.is_a?(Array)
-    raise SyntaxError,
-          "Símbolo #{current_token.inspect} inesperado. "\
-          "Esperando #{expected_types} - Linha #{line}, Coluna #{column}."
+    posicao = token.linha && token.coluna ? " - Linha #{token.linha}, Coluna #{token.coluna}." : "."
+
+    raise "02: Símbolo #{token.match.inspect} inesperado. "\
+          "Esperando #{expected_types}" +
+          posicao
   end
 end

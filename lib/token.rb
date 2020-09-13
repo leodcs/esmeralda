@@ -3,7 +3,7 @@
 class Token
   attr_reader :match, :type, :token, :lexema, :valor, :linha, :coluna
 
-  def initialize(match, type, token, lexema, valor, linha, coluna)
+  def initialize(match, type, token = nil, lexema = nil, valor = nil, linha = nil, coluna = nil)
     @match = match
     @type = type
     @token = token

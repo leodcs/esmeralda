@@ -17,14 +17,14 @@ require 'rgl/dot'
 arquivo = File.read('input.txt')
 
 # Inicio da Compilacao
-# begin
+begin
   tabela_lexica = Scanner.new(arquivo).scan
   parse = Parser.new(tabela_lexica).parse
-# rescue StandardError => e
-#   e.set_backtrace([])
-#   puts "ERRO #{e.message}"
-#   exit
-# end
+rescue StandardError => e
+  e.set_backtrace([])
+  puts "ERRO #{e.message}"
+  exit
+end
 # Fim da Compilacao
 
 # Debugging das etapas
