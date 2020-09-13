@@ -252,6 +252,17 @@ class Parser
   end
 
   def itera_repeat
+    return unless proximo?(:REPEAT)
+
+    consome(:REPEAT)
+    nodes = comando
+    consome(:UNTIL)
+    consome(:ABRE_PAREN)
+    expression = expr_relacional!
+    consome(:FECHA_PAREN)
+    consome(:PONTO_VIRGULA)
+
+    return Nodes::Iteration.new(expression, nodes)
   end
 
   def declaracoes

@@ -4,7 +4,7 @@ Begin
   Begin
     x := 4 + 5;
 
-    while ((x > 1) and (3 > 4)) do
-      x :=  x - 1;
+    repeat x := x - 1;
+    until (x > 1);
   end;
 end.
