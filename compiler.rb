@@ -1,9 +1,10 @@
-Dir['./config/**/*.rb'].sort.each { |config| require config }
+Dir['./lib/config/**/*.rb'].sort.each { |config| require config }
 
 require './lib/token'
 require './lib/scanner'
 require './lib/parser'
 require './lib/nodes/node'
+Dir['./lib/exceptions/*.rb'].each { |exception| require exception }
 Dir['./lib/nodes/*.rb'].sort.each { |node| require node }
 
 # Debugging
@@ -22,7 +23,7 @@ begin
   parse = Parser.new(tabela_lexica).parse
 rescue StandardError => e
   e.set_backtrace([])
-  puts "ERRO #{e.message}"
+  puts e.message
   exit
 end
 # Fim da Compilacao

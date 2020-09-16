@@ -1,6 +1,6 @@
 Program teste;
   Integer x;
-  { Esse texto deve ser ignorado }
+  Esse texto deverá ser ignorado }
 Begin
   Begin
     x := 4 + 5;

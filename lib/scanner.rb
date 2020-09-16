@@ -80,7 +80,6 @@ class Scanner
   end
 
   def erro_lexico
-    raise "01: Identificador ou símbolo inválido. #{@text_to_scan.inspect} - "\
-          "Linha #{@line_number}, Coluna #{current_column}."
+    raise ScannerError.new(@text_to_scan, @line_number, current_column)
   end
 end
