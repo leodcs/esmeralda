@@ -1,11 +1,10 @@
 Program teste;
-  Integer x;
-  Esse texto deverá ser ignorado }
+  Integer x, y, z;
 Begin
   Begin
     x := 4 + 5;
 
-    repeat x := x - 1;
-    until (x > 1);
+    repeat x = x - 1;
+      until (x > 1);
   end;
 end.

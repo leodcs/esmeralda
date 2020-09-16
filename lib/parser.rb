@@ -325,11 +325,7 @@ class Parser
 
   def erro_sintatico(expected_types, token = nil)
     token ||= @tokens.first
-    expected_types = expected_types.join(' ou ') if expected_types.is_a?(Array)
-    posicao = token.linha && token.coluna ? " - Linha #{token.linha}, Coluna #{token.coluna}." : "."
 
-    raise "02: Símbolo #{token.match.inspect} inesperado. "\
-          "Esperando #{expected_types}" +
-          posicao
+    raise ParserError.new(token, expected_types)
   end
 end
