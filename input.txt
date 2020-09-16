@@ -2,9 +2,9 @@ Program teste;
   Integer x, y, z;
 Begin
   Begin
-    x := 4 + 5;
+    x := (4 + 6) * (5);
 
-    repeat x = x - 1;
+    repeat x := x - 1;
       until (x > 1);
   end;
 end.

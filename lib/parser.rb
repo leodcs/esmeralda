@@ -74,8 +74,8 @@ class Parser
     consome(:IF)
     consome(:ABRE_PAREN)
 
-    if_body = expr_relacional!
-    nodes << if_body
+    then_body = expr_relacional!
+    nodes << then_body
 
     consome(:FECHA_PAREN)
     consome(:THEN)
@@ -88,7 +88,7 @@ class Parser
       nodes << else_body = comando!
     end
 
-    return Nodes::Conditional.new(if_body, else_body, nodes)
+    return Nodes::Conditional.new(then_body, else_body, nodes)
   end
 
   def expr_relacional
