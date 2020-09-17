@@ -46,7 +46,7 @@ class Token
       :ID => Token.id,
       :REAL => /\b#{Token.integer}\.#{Token.integer}\b/,
       :INTEGER => /\b#{Token.integer}\b/,
-      :STRING => Token.id,
+      :STRING => /'#{Token.id}'/,
       :OP_RELACIONAL => /<>|<=|>=|<|>|=/,
       :OP_ARITMETICO => /\+|-|\*|\//,
       :DPI => /:=/,
