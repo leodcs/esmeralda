@@ -1,7 +1,23 @@
 class ParserError < StandardError
+  SYMBOLS = {
+    :TIPO_VAR => ['STRING', 'INTEGER', 'REAL'],
+    :DPI => ':=',
+    :VIRGULA => ',',
+    :ABRE_CHAVE => '{',
+    :FECHA_CHAVE => '}',
+    :ABRE_PAREN => '(',
+    :FECHA_PAREN => ')',
+    :PONTO => '.',
+    :PONTO_VIRGULA => ';'
+  }
+
   def initialize(token, expected_types)
     @token = token
-    @expected_types = expected_types
+    if expected_types.class == Array
+      @expected_types = expected_types
+    else
+      @expected_types = [expected_types]
+    end
 
     super(error_message)
   end
@@ -9,17 +25,29 @@ class ParserError < StandardError
   private
 
   def error_message
-    "ERRO 02: Símbolo #{@token.match.inspect} inesperado. Esperando #{expected_types} #{position}."
+    "ERRO 02: Símbolo #{@token.match.inspect} inesperado. Esperando #{expected_types}#{position}."
   end
 
+  # Se o tipo esperado for uma chave na constante SYMBOLS,
+  # usa o valor da string na constante na hora de imprimir o erro.
+  # Se não for, usa o valor que receber.
+  # Por exemplo: imprime ";" ao invés de PONTO_VIRGULA,
+  # mas, se o token esperado for OP_ARITMETICO, imprime OP_ARITMETICO,
+  # pois ele nao esta na constante
   def expected_types
-    if @expected_types.class == Array
-      return @expected_types.join(' ou ')
-    else
-      return @expected_types
+    types = @expected_types.map do |type|
+      if SYMBOLS.keys.include?(type)
+        SYMBOLS[type].inspect
+      else
+        type.to_s
+      end
     end
+
+    return types.flatten.join(' ou ')
   end
 
+  # Verifica se o @token encontrado tem linha e coluna.
+  # Se for um token de FIM de arquivo nao tera
   def position
     if @token.linha && @token.coluna
       return " - Linha #{@token.linha}, Coluna #{@token.coluna}"

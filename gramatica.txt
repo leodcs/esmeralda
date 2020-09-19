@@ -8,7 +8,7 @@
 
 <tipo> ::= INTEGER | REAL | STRING
 
-<bloco> ::= Begin [<comando>  [ <comando>]*]* end ;
+<bloco> ::= Begin [<comando> [ <comando>]*]* end ;
 
 <comando> ::= <comando_basico> | <iteracao> | <condicional> ;
 
@@ -32,7 +32,7 @@
 
 <multi_op_relacional> ::= (<expr_relacional>) [<op_booleanos> (<expr_relacional>)]*
 
-<op_relacional> ::= <val> <op_relacionais> <val>
+<op_relacional> ::= <val> OP_RELACIONAL <val>
 
 <expr_arit> ::= <val> | <op_arit> | <multi_arit>
 

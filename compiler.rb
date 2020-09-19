@@ -67,6 +67,7 @@ class Compiler
       end
 
       graph.write_to_graphic_file('png', 'parse', { 'vertex' => { 'fontsize' => 15 }})
+      `open parse.png`
     rescue StandardError => e
       p e
     end
