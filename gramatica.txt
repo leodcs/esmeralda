@@ -14,7 +14,9 @@
 
 <condicional> ::= if (<expr_relacional>) then <comando> [else <comando>]*
 
-<comando_basico> ::= <atribuicao> | <bloco> | <comando_all>
+<comando_basico> ::= <atribuicao> | <bloco> | <chamada>
+
+<chamada> ::= comando_all
 
 <comando_all> ::= All ( <id>  [, <id>]* );
 

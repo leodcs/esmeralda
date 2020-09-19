@@ -1,19 +1,20 @@
 class Parser
-  attr_reader :declarations, :assignments
+  attr_reader :declarations, :assignments, :calls
 
   def initialize(tokens)
     @tokens = tokens.dup
+    @calls = []
     @assignments = []
   end
 
   def parse
     programa
 
-    self
+    return self
   end
 
   def root
-    programa
+    return programa
   end
 
   private
@@ -157,7 +158,16 @@ class Parser
   end
 
   def comando_basico
-    atribuicao || bloco || comando_all
+    atribuicao || bloco || chamada
+  end
+
+  def chamada
+    node = comando_all
+
+    if node.present?
+      @calls << node
+      return node
+    end
   end
 
   def comando_all
