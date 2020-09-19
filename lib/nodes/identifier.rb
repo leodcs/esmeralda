@@ -1,9 +1,21 @@
 module Nodes
   class Identifier < Node
-    attr_reader :value
+    attr_reader :name
 
-    def initialize(value, nodes = [])
-      @value = value
+    def initialize(name, nodes = [])
+      @name = name
+
+      super(nodes)
+    end
+
+    def assignment
+      $parse.assignments.find do |assignment|
+        self.name.match == assignment.name.match
+      end
+    end
+
+    def type
+      assignment&.type
     end
   end
 end

@@ -1,11 +1,4 @@
 module Nodes
-  class Operation < Node
-    attr_reader :operator
-
-    def initialize(operator, nodes = [])
-      @operator = operator
-
-      super(nodes)
-    end
+  class Operation < Expression
   end
 end

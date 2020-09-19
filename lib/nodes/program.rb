@@ -1,9 +1,9 @@
 module Nodes
   class Program < Node
-    attr_reader :value
+    attr_reader :name
 
-    def initialize(value, nodes = [])
-      @value = value
+    def initialize(name, nodes = [])
+      @name = name
 
       super(nodes)
     end

@@ -1,11 +1,21 @@
 module Nodes
   class Assignment < Node
-    attr_reader :assignment
+    attr_reader :name
 
-    def initialize(assignment, nodes = [])
-      @assignment = assignment
+    def initialize(name, nodes = [])
+      @name = name
 
       super(nodes)
+    end
+
+    def type
+      nodes.first.type
+    end
+
+    def declaration
+      $parse.declarations.find do |declaration|
+        declaration.name.match == name.match
+      end
     end
   end
 end

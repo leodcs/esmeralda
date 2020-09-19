@@ -1,9 +1,9 @@
 class Parser
-  attr_reader :declarations
+  attr_reader :declarations, :assignments
 
   def initialize(tokens)
     @tokens = tokens.dup
-    @declarations = []
+    @assignments = []
   end
 
   def parse
@@ -27,17 +27,16 @@ class Parser
     prog_name = consome(:ID)
     consome(:PONTO_VIRGULA)
 
-    declarations = declaracoes
-    @declarations += declarations
+    @declarations = declaracoes.flatten
 
     consome(:BEGIN)
     body = bloco!
     consome(:END)
     consome(:PONTO)
 
-    nodes = declarations + [body]
+    nodes = @declarations + [body]
 
-    return Nodes::Program.new(prog_name, nodes)
+    return ::Nodes::Program.new(prog_name, nodes)
   end
 
   def bloco
@@ -48,7 +47,7 @@ class Parser
     consome(:END)
     consome(:PONTO_VIRGULA)
 
-    return Nodes::Block.new(nodes)
+    return ::Nodes::Block.new(nodes)
   end
 
   def bloco!
@@ -88,7 +87,7 @@ class Parser
       nodes << else_body = comando!
     end
 
-    return Nodes::Conditional.new(then_body, else_body, nodes)
+    return ::Nodes::Conditional.new(then_body, else_body, nodes)
   end
 
   def expr_relacional
@@ -114,7 +113,7 @@ class Parser
       consome(:FECHA_PAREN)
     end
 
-    return Nodes::MultiExpression.new(operator, expressions)
+    return ::Nodes::MultiExpression.new(operator, expressions)
   end
 
   def op_relacional
@@ -125,7 +124,7 @@ class Parser
     operador = consome(:OP_RELACIONAL)
     nodes << val!
 
-    return Nodes::Expression.new(operador, nodes)
+    return ::Nodes::Expression.new(operador, nodes)
   end
 
   def val
@@ -133,28 +132,28 @@ class Parser
   end
 
   def val!
-    obriga_presenca_de(:val, [:ID, :INTEGER, :REAL])
+    obriga_presenca_de(:val, [:ID, :INTEGER, :REAL, :STRING])
   end
 
   def id
     return unless proximo?(:ID)
 
-    value = consome(:ID)
-    return Nodes::Identifier.new(value)
+    name = consome(:ID)
+    return ::Nodes::Identifier.new(name)
   end
 
   def integer
     return unless proximo?(:INTEGER)
 
     value = consome(:INTEGER)
-    return Nodes::Integer.new(value)
+    return ::Nodes::Integer.new(value)
   end
 
   def real
     return unless proximo?(:REAL)
 
     value = consome(:REAL)
-    return Nodes::Real.new(value)
+    return ::Nodes::Real.new(value)
   end
 
   def comando_basico
@@ -167,28 +166,29 @@ class Parser
     params = []
     method_name = consome(:ALL)
     consome(:ABRE_PAREN)
-    params << Nodes::Identifier.new(consome(:ID))
+    params << ::Nodes::Identifier.new(consome(:ID))
 
     while proximo?(:VIRGULA) do
       consome(:VIRGULA)
-      params << Nodes::Identifier.new(consome(:ID))
+      params << ::Nodes::Identifier.new(consome(:ID))
     end
 
     consome(:FECHA_PAREN)
     consome(:PONTO_VIRGULA)
 
-    return Nodes::Call.new(method_name, params)
+    return ::Nodes::Call.new(method_name, params)
   end
 
   def atribuicao
     return unless proximo?(:ID, :DPI)
 
-    identifier = consome(:ID)
+    name = consome(:ID)
     consome(:DPI)
     nodes = expr_arit!
     consome(:PONTO_VIRGULA)
+    @assignments << ::Nodes::Assignment.new(name, nodes)
 
-    return Nodes::Assignment.new(identifier, nodes)
+    return @assignments.last
   end
 
   def atribuicao!
@@ -211,7 +211,7 @@ class Parser
     operator = consome(:OP_ARITMETICO)
     nodes << val!
 
-    return Nodes::Operation.new(operator, nodes)
+    return ::Nodes::Operation.new(operator, nodes)
   end
 
   def multi_arit
@@ -228,7 +228,7 @@ class Parser
     nodes << expr_arit!
     consome(:FECHA_PAREN)
 
-    return Nodes::Expression.new(operador, nodes)
+    return ::Nodes::Expression.new(operador, nodes)
   end
 
   def iteracao
@@ -245,7 +245,7 @@ class Parser
     consome(:DO)
     nodes = comando
 
-    return Nodes::Iteration.new(expression, nodes)
+    return ::Nodes::Iteration.new(expression, nodes)
   end
 
   def itera_repeat
@@ -259,7 +259,7 @@ class Parser
     consome(:FECHA_PAREN)
     consome(:PONTO_VIRGULA)
 
-    return Nodes::Iteration.new(expression, nodes)
+    return ::Nodes::Iteration.new(expression, nodes)
   end
 
   def declaracoes
@@ -269,18 +269,20 @@ class Parser
   def declaracao
     return unless proximo?(:TIPO_VAR)
 
-    var_names = []
+    names = []
     type = consome(:TIPO_VAR)
-    var_names << consome(:ID)
+    names << consome(:ID)
 
     while proximo?(:VIRGULA) do
       consome(:VIRGULA)
-      var_names << consome(:ID)
+      names << consome(:ID)
     end
 
     consome(:PONTO_VIRGULA)
 
-    return Nodes::Declaration.new(var_names, type)
+    declarations = names.map { |name| ::Nodes::Declaration.new(name, type) }
+
+    return declarations
   end
 
   ##### Helper methods
@@ -299,7 +301,7 @@ class Parser
     token = @tokens.shift
 
     if token.present? && token.type == tipo_esperado
-      return token.match
+      return token
     else
       erro_sintatico(tipo_esperado, token)
     end

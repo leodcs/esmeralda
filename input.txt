@@ -1,10 +1,9 @@
+{ ; -*- mode: Pascal;-*- }
+
 Program teste;
-  Integer x, y, z;
+  REAL a;
 Begin
   Begin
-    x := (4 + 6) * (5);
-
-    repeat x := x - 1;
-      until (x > 1);
+    a := 'STRING';
   end;
 end.

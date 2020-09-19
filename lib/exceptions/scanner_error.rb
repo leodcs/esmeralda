@@ -1,7 +1,8 @@
-class ParserError < StandardError
-  def initialize(token, expected_types)
-    @token = token
-    @expected_types = expected_types
+class ScannerError < StandardError
+  def initialize(unexpected_text, line, column)
+    @unexpected_text = unexpected_text
+    @line = line
+    @column = column
 
     super(error_message)
   end
@@ -9,20 +10,6 @@ class ParserError < StandardError
   private
 
   def error_message
-    "ERRO 02: Símbolo #{@token.match.inspect} inesperado. Esperando #{expected_types} #{position}."
-  end
-
-  def expected_types
-    if @expected_types.class == Array
-      return @expected_types.join(' ou ')
-    else
-      return @expected_types
-    end
-  end
-
-  def position
-    if @token.linha && @token.coluna
-      return " - Linha #{@token.linha}, Coluna #{@token.coluna}"
-    end
+    "ERRO 01: Identificador ou símbolo inválido. #{@unexpected_text.inspect} - Linha #{@line}, Coluna #{@column}."
   end
 end

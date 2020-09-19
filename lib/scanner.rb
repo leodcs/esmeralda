@@ -57,24 +57,21 @@ class Scanner
       token = type.to_s
       lexema = valor = nil
       match = matches[0]
+      coluna = current_column
       @text_to_scan = @text_to_scan.delete_prefix(match).strip
 
       case type
       when :INTEGER, :REAL
         token = 'Numerico'
         valor = match.to_i
-      when :ID
+      when :ID, :STRING
         token = 'ID'
-        lexema = match
-      when :STRING
-        token = 'ID'
-        match = match.gsub("'", '')
         lexema = match
       else
         token = match
       end
 
-      token_achado = Token.new(match, type, token, lexema, valor, @line_number, current_column)
+      token_achado = Token.new(match, type, token, lexema, valor, @line_number, coluna)
 
       break(token_achado)
     end

@@ -1,6 +1,6 @@
 module Nodes
   class Node
-    attr_reader :nodes
+    attr_reader :type, :nodes
 
     def initialize(nodes = [])
       if nodes.class == Array
@@ -10,20 +10,39 @@ module Nodes
       end
     end
 
+    def leaf?
+      nodes.empty?
+    end
+
+    def leafs
+      return self if leaf?
+
+      return nodes.map(&:leafs).flatten
+    end
+
+    def children
+      children = nodes.dup
+      children << children.map(&:children).flatten
+
+      return children.flatten
+    end
+
     def debug_name
       object_name = "#{self.class.name}:#{object_id} \n"
 
       node_debug = case self.class.name.split('::').last
                    when 'Declaration'
-                     "#{value} - #{type}"
-                   when 'Program', 'Integer', 'Real', 'Identifier'
-                     value
-                   when 'Operation'
-                     operator
+                     "#{name.match} (#{type})"
+                   when 'Program', 'Identifier'
+                     name.match
+                   when 'Integer', 'Real'
+                     value.match
+                   when 'Operation', 'Expression'
+                     operator.match
                    when 'Assignment'
-                     assignment
+                     "#{name.match} (#{type})"
                    when 'Call'
-                     "#{method_name} (#{params.map(&:value).join(', ')})"
+                     "#{method_name} (#{params.map(&:name).join(', ')})"
                    end
 
       return object_name + node_debug.to_s
