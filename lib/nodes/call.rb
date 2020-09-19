@@ -8,5 +8,16 @@ module Nodes
 
       super(nodes)
     end
+
+    def param_type
+      case method_name.match.upcase
+      when 'ALL'
+        return :string
+      end
+    end
+
+    def invalid_params
+      params.select { |param| self.param_type != param.type }
+    end
   end
 end

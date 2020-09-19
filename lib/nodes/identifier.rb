@@ -21,6 +21,7 @@ module Nodes
     end
 
     def type
+      # TODO: Corrigir stackoverflow quando `assignment.children.include?(self)`
       assignment&.type
     end
   end

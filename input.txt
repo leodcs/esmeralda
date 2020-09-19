@@ -1,9 +1,7 @@
 { ; -*- mode: pascal;-*- }
 
 program teste;
-INTEGER x;
 begin
 begin
-   All(x);
 end;
 end.

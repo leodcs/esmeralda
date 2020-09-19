@@ -6,8 +6,10 @@ class Semantic
   def analyze
     check_double_declarations
     check_assignments_types
-    # TODO: Verificar se esse caso configura o erro 4:
+    # TODO: Verificar se esses dois casos configuram o ERRO 4:
     check_identifiers_types
+    check_call_param_types
+    #### END Todo
   end
 
   private
@@ -30,7 +32,6 @@ class Semantic
     @parse.assignments.each do |assignment|
       verifica_declaracao(assignment)
       verifica_compatibilidade(assignment)
-      # TODO: Verificar tipos corretos nos parametros dos Call Nodes
     end
   end
 
@@ -39,6 +40,16 @@ class Semantic
 
     identifiers.each do |identifier|
       verifica_declaracao(identifier)
+    end
+  end
+
+  def check_call_param_types
+    @parse.calls.each do |call|
+      invalid_param = call.invalid_params.first
+
+      if invalid_param.present?
+        erro_tipos_incompativeis(call.param_type, invalid_param)
+      end
     end
   end
 
@@ -53,8 +64,8 @@ class Semantic
   def verifica_compatibilidade(assignment)
     declaration = assignment.declaration
 
-    if !declaration.aceita_tipo?(assignment.type)
-      erro_tipos_incompativeis(declaration, assignment)
+    unless declaration.aceita_tipo?(assignment.type)
+      erro_tipos_incompativeis(declaration.type, assignment)
     end
   end
 
@@ -62,8 +73,8 @@ class Semantic
     raise UndeclaredVarError.new(name)
   end
 
-  def erro_tipos_incompativeis(declaration, assignment)
-    raise IncompatibleTypesError.new(declaration, assignment)
+  def erro_tipos_incompativeis(expected_type, token_found)
+    raise IncompatibleTypesError.new(expected_type, token_found)
   end
 
   def erro_dupla_declaracao(declaration)
