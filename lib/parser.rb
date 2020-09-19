@@ -117,7 +117,7 @@ class Parser
   end
 
   def op_relacional
-    return unless proximo?(:ID, :OP_RELACIONAL) || proximo?(:INTEGER, :OP_RELACIONAL) || proximo?(:REAL, :OP_RELACIONAL)
+    return unless proximo?(:ID) || proximo?(:INTEGER) || proximo?(:REAL)
 
     nodes = []
     nodes << val!
@@ -132,7 +132,7 @@ class Parser
   end
 
   def val!
-    obriga_presenca_de(:val, [:ID, :INTEGER, :REAL, :STRING])
+    obriga_presenca_de(:val, [:ID, :INTEGER, :REAL])
   end
 
   def id
