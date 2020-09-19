@@ -42,7 +42,7 @@ module Nodes
                    when 'Assignment'
                      "#{name.match} (#{type})"
                    when 'Call'
-                     "#{method_name} (#{params.map(&:name).join(', ')})"
+                     "#{method_name.match} (#{params.map(&:name).map(&:match).join(', ')})"
                    end
 
       return object_name + node_debug.to_s

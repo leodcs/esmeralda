@@ -17,5 +17,9 @@ module Nodes
         declaration.name.match == name.match
       end
     end
+
+    def identifiers
+      children.select { |child| child.class == ::Nodes::Identifier }
+    end
   end
 end

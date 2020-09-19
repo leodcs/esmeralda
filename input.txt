@@ -1,14 +1,7 @@
 { ; -*- mode: pascal;-*- }
 
 program teste;
-integer a;
-real b, c;
 begin
-begin
-   a := 10;
-   b := 10/9;
-   if (1 > 2) then
-      if (2 > 1) then
-      begin end;
-end;
+  begin
+  end;
 end.
