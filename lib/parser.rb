@@ -1,10 +1,11 @@
 class Parser
-  attr_reader :declarations, :assignments, :calls
+  attr_reader :declarations, :assignments, :identifiers, :calls
 
   def initialize(tokens)
     @tokens = tokens.dup
     @calls = []
     @assignments = []
+    @identifiers = []
   end
 
   def parse
@@ -140,7 +141,9 @@ class Parser
     return unless proximo?(:ID)
 
     name = consome(:ID)
-    return ::Nodes::Identifier.new(name)
+    @identifiers << (node = ::Nodes::Identifier.new(name))
+
+    return node
   end
 
   def integer
@@ -182,6 +185,8 @@ class Parser
       consome(:VIRGULA)
       params << ::Nodes::Identifier.new(consome(:ID))
     end
+
+    @identifiers += params
 
     consome(:FECHA_PAREN)
     consome(:PONTO_VIRGULA)

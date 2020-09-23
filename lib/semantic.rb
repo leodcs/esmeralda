@@ -4,17 +4,15 @@ class Semantic
   end
 
   def analyze
-    check_double_declarations
-    check_assignments_types
-    # TODO: Verificar se esses dois casos configuram o ERRO 4:
-    check_identifiers_types
-    check_call_param_types
-    #### END Todo
+    check_declarations
+    check_assignments
+    check_identifiers
+    check_call_params
   end
 
   private
 
-  def check_double_declarations
+  def check_declarations
     declarations = @parse.declarations.map(&:name).map(&:match)
 
     primeira_duplicada = @parse.declarations.find.with_index do |declaration, index|
@@ -28,22 +26,22 @@ class Semantic
     end
   end
 
-  def check_assignments_types
+  def check_assignments
     @parse.assignments.each do |assignment|
       verifica_declaracao(assignment)
       verifica_compatibilidade(assignment)
     end
   end
 
-  def check_identifiers_types
-    identifiers = @parse.assignments.map(&:identifiers).flatten
+  def check_identifiers
+    identifiers = @parse.identifiers.flatten
 
     identifiers.each do |identifier|
       verifica_declaracao(identifier)
     end
   end
 
-  def check_call_param_types
+  def check_call_params
     @parse.calls.each do |call|
       invalid_param = call.invalid_params.first
 
