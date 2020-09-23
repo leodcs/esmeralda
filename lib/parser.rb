@@ -190,10 +190,10 @@ class Parser
   end
 
   def atribuicao
-    return unless proximo?(:ID, :DPI)
+    return unless proximo?(:ID, :ATRIB)
 
     name = consome(:ID)
-    consome(:DPI)
+    consome(:ATRIB)
     nodes = expr_arit!
     consome(:PONTO_VIRGULA)
     @assignments << ::Nodes::Assignment.new(name, nodes)

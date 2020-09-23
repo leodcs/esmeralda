@@ -48,7 +48,7 @@ class Token
       :INTEGER => /\b#{Token.integer}\b/,
       :OP_RELACIONAL => /<>|<=|>=|<|>|=/,
       :OP_ARITMETICO => /\+|-|\*|\//,
-      :DPI => /:=/,
+      :ATRIB => /:=/,
       :VIRGULA => /,/,
       :ABRE_CHAVE => /{/,
       :FECHA_CHAVE => /}/,

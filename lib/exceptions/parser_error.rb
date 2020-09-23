@@ -1,7 +1,7 @@
 class ParserError < StandardError
   SYMBOLS = {
     :TIPO_VAR => ['STRING', 'INTEGER', 'REAL'],
-    :DPI => ':=',
+    :ATRIB => ':=',
     :VIRGULA => ',',
     :ABRE_CHAVE => '{',
     :FECHA_CHAVE => '}',
