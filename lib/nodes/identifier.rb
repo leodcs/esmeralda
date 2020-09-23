@@ -8,6 +8,16 @@ module Nodes
       super(nodes)
     end
 
+    def type
+      return if assignment.nil?
+
+      if assignment.name.match == name.match
+        return declaration&.type
+      else
+        return assignment&.type
+      end
+    end
+
     def declaration
       $parse.declarations.find do |declaration|
         self.name.match == declaration.name.match
@@ -18,11 +28,6 @@ module Nodes
       $parse.assignments.find do |assignment|
         self.name.match == assignment.name.match
       end
-    end
-
-    def type
-      # TODO: Corrigir stackoverflow quando `assignment.children.include?(self)`
-      assignment&.type
     end
   end
 end

@@ -9,11 +9,11 @@ module Nodes
       super(nodes)
     end
 
-    def aceita_tipo?(assignment_type)
-      if self.type == :real && assignment_type == :integer
+    def aceita_tipo?(tipo)
+      if (self.type == :real) && (tipo == :integer)
         return true
       else
-        return assignment_type == type
+        return (tipo == self.type)
       end
     end
   end

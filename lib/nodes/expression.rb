@@ -15,8 +15,8 @@ module Nodes
 
       if children_types.any?(:real)
         return :real
-      elsif children_types.all?(:integer)
-        return :integer
+      else
+        return children_types.first
       end
     end
   end
