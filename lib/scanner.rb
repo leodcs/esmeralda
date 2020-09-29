@@ -1,14 +1,15 @@
 # frozen_string_literal: true
 
 class Scanner
+  TOKENS_OUT = './tmp/tabela-lexica.yaml'
+
   def initialize(file)
     @file = file
     @current_state = :default
+    File.open(TOKENS_OUT, 'w')
   end
 
   def scan
-    tokens = []
-
     @file.lines.each_with_index do |line, index|
       @full_line = line.upcase
       @text_to_scan = @full_line.strip
@@ -18,19 +19,38 @@ class Scanner
         if @current_state == :comment || @text_to_scan.start_with?('{')
           ignora_comentarios
         elsif @current_state == :default && (token = get_next_token)
-          tokens << token
+          push_token(token)
         else
           erro_lexico
         end
       end
     end
 
-    tokens << Token.new('FIM_DO_ARQUIVO', :FIM)
+    fim_arquivo = Token.new('FIM_DO_ARQUIVO', :FIM)
+    push_token(fim_arquivo)
 
-    return tokens
+    return self
+  end
+
+  def le_tokens(index, length = 1)
+    store = YAML::Store.new(TOKENS_OUT)
+    store.transaction do
+      ids = store.roots.slice(index, length)
+      return ids.map { |id| store[id] }
+    end
   end
 
   private
+
+  def push_token(token)
+    store = YAML::Store.new(TOKENS_OUT)
+    store.transaction do
+      ultimo_id = store.roots.last || 0
+      proximo_id = ultimo_id + 1
+
+      store[proximo_id] = token
+    end
+  end
 
   def ignora_comentarios
     if @text_to_scan.start_with?('{') && !@text_to_scan.end_with?('}')

@@ -1,8 +1,8 @@
 class Parser
   attr_reader :declarations, :assignments, :identifiers, :calls
 
-  def initialize(tokens)
-    @tokens = tokens.dup
+  def initialize
+    @ponteiro = 0
     @calls = []
     @assignments = []
     @identifiers = []
@@ -300,7 +300,7 @@ class Parser
     return declarations
   end
 
-  ##### Helper methods
+  ##### Métodos auxiliares
 
   def proximo?(*tipos_esperados)
     proximos = proximos(tipos_esperados.size)
@@ -309,13 +309,19 @@ class Parser
   end
 
   def proximos(n)
-    @tokens[0, n]
+    $scan.le_tokens(@ponteiro, n)
+  end
+
+  def proximo_token
+    tokens = $scan.le_tokens(@ponteiro)
+    tokens.pop
   end
 
   def consome(tipo_esperado)
-    token = @tokens.shift
+    token = proximo_token
 
     if token.present? && token.type == tipo_esperado
+      @ponteiro = @ponteiro + 1
       return token
     else
       erro_sintatico(tipo_esperado, token)
@@ -341,8 +347,6 @@ class Parser
   end
 
   def erro_sintatico(expected_types, token = nil)
-    token ||= @tokens.first
-
-    raise ParserError.new(token, expected_types)
+    raise ParserError.new(proximo_token, expected_types)
   end
 end
