@@ -30,7 +30,7 @@ class Compiler
       end
     end
 
-    debug if ARGV.include?('--open')
+    debug if ARGV.include?('--debug')
   end
 
   def run(file)
@@ -69,7 +69,7 @@ class Compiler
       end
 
       graph.write_to_graphic_file('png', 'parse', { 'vertex' => { 'fontsize' => 15 }})
-      `open parse.png`
+      `open parse.png` if ARGV.include?('--open')
     rescue StandardError => e
       p e
     end

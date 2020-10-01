@@ -9,12 +9,10 @@ module Nodes
     end
 
     def type
-      return if assignment.nil?
-
-      if assignment.name.match == name.match
-        return declaration&.type
-      else
-        return assignment&.type
+      if assignment && assignment.name.match == name.match
+        return assignment.type
+      elsif declaration
+        return declaration.type
       end
     end
 
