@@ -1,12 +1,10 @@
 { ; -*- mode: pascal;-*- }
 
 Program teste;
-  REAL x;
-  INTEGER y;
+REAL x;
+INTEGER y;
 Begin
-  Begin
-     x := 1;
-     y := (1 + 9) * (3);
-     x := ((x * 3) + (3 - 6)) - (3/2);
-  end;
+Begin
+   If (> 0 then
+end;
 end.

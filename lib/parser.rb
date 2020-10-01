@@ -97,7 +97,7 @@ class Parser
   end
 
   def expr_relacional!
-    obriga_presenca_de(:expr_relacional, [:ID, :INTEGER, :REAL, :ABRE_PAREN])
+    obriga_presenca_de(:expr_relacional, [:ABRE_PAREN, :ID, :INTEGER, :REAL])
   end
 
   def multi_op_relacional
@@ -195,7 +195,7 @@ class Parser
   end
 
   def atribuicao
-    return unless proximo?(:ID, :ATRIB)
+    return unless proximo?(:ID)
 
     name = consome(:ID)
     consome(:ATRIB)
