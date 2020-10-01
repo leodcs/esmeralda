@@ -9,7 +9,7 @@
 </p>
 
 # Fases da compilação
-![esmeralda.png](https://i.imgur.com/3enMEUG.png)
+![esmeralda.png](https://i.imgur.com/7wbXPu0.png)
 
 # Como usar
 
