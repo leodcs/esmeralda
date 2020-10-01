@@ -1,5 +1,7 @@
 Dir['./lib/config/**/*.rb'].sort.each { |config| require config }
 
+require 'colorize'
+require 'tty-reader'
 require 'yaml/store'
 require './lib/token'
 require './lib/scanner'
@@ -10,30 +12,8 @@ require './lib/nodes/expression'
 Dir['./lib/exceptions/*.rb'].each { |exception| require exception }
 Dir['./lib/nodes/*.rb'].sort.each { |node| require node }
 
-# Debugging
-require 'pry'
-require 'rgl/adjacency'
-require 'rgl/dot'
-# End Debugging
-
 class Compiler
   def compile(file)
-    if ARGV[0] == '--verbose' || ARGV[0] == '-v'
-      run(file)
-    else
-      begin
-        run(file)
-      rescue StandardError => exception
-        exception.set_backtrace([])
-        puts exception.message
-        exit
-      end
-    end
-
-    debug if ARGV.include?('--debug')
-  end
-
-  def run(file)
     scan(file)
     parse
     analyze_semantic
@@ -50,31 +30,33 @@ class Compiler
   def analyze_semantic
     Semantic.new($parse).analyze
   end
-
-  def debug
-    begin
-      root = $parse.root
-      def nodify(graph, parent, nodes)
-        nodes.each do |node|
-          graph.add_edge(parent.debug_name, node.debug_name)
-
-          nodify(graph, node, node.nodes) if node.nodes.present?
-        end
-      end
-
-      graph = RGL::DirectedAdjacencyGraph.new
-      root.nodes.each do |node|
-        graph.add_edge(root.debug_name, node.debug_name)
-        nodify(graph, node, node.nodes)
-      end
-
-      graph.write_to_graphic_file('png', 'parse', { 'vertex' => { 'fontsize' => 15 }})
-      `open parse.png` if ARGV.include?('--open')
-    rescue StandardError => e
-      p e
-    end
-  end
 end
 
-file = File.read('input.txt')
-Compiler.new.compile(file)
+reader = TTY::Reader.new
+
+reader.on(:keyescape) do
+  puts "Finalizando..."
+  exit
+end
+
+loop do
+  puts 'Tecle ESC para encerrar ou digite o nome do arquivo e tecle Enter'
+  nome_arquivo = reader.read_line('Nome do arquivo (sem extensão): ').chomp
+  next if nome_arquivo.blank?
+
+  if File.file?(nome_arquivo)
+    arquivo = File.read(nome_arquivo)
+    begin
+      puts 'Compilando...'.colorize(:light_blue)
+      Compiler.new.compile(arquivo)
+      puts 'Compilação efetuada com sucesso.'.colorize(:green)
+    rescue StandardError => exception
+      exception.set_backtrace([])
+      puts exception.message.colorize(:red)
+    ensure
+      puts
+    end
+  else
+    puts "Arquivo não encontrado: \"#{nome_arquivo}\"".colorize(:red)
+  end
+end
