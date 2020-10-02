@@ -47,7 +47,7 @@ loop do
   if File.file?(nome_arquivo)
     arquivo = File.read(nome_arquivo)
     begin
-      puts 'Compilando...'.colorize(:light_blue)
+      puts 'Compilando...'.colorize(:blue)
       Compiler.new.compile(arquivo)
       puts 'Compilação efetuada com sucesso.'.colorize(:green)
     rescue StandardError => exception
