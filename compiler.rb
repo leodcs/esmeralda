@@ -32,6 +32,7 @@ class Compiler
   end
 end
 
+caminho_executavel = ENV.fetch('OCRA_EXECUTABLE', Dir.pwd)
 reader = TTY::Reader.new
 
 reader.on(:keyescape) do
@@ -43,9 +44,10 @@ loop do
   puts 'Tecle ESC para encerrar ou digite o nome do arquivo e tecle Enter'
   nome_arquivo = reader.read_line('Nome do arquivo (sem extensão): ').chomp
   next if nome_arquivo.blank?
+  caminho_arquivo = File.join('.', nome_arquivo)
 
-  if File.file?(nome_arquivo)
-    arquivo = File.read(nome_arquivo)
+  if File.file?(caminho_arquivo)
+    arquivo = File.read(caminho_arquivo)
     begin
       puts 'Compilando...'.colorize(:blue)
       Compiler.new.compile(arquivo)

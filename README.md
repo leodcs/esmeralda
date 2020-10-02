@@ -23,4 +23,4 @@ ruby compiler.rb
 # Observação importante :warning:
 A depender do tamanho do algoritmo sendo compilado, é possível que a compilação demore proporcionalmente. </br>
 Isso é devido a usarmos um arquivo, ao invés da memória RAM, para salvar a tabela léxica. <br/>
-Para visualizá-la, veja o arquivo gerado no caminho: `tmp/tabela-lexica.yaml`
+Para visualizá-la, veja o arquivo gerado: `tabela-lexica.yaml`

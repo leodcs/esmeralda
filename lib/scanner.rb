@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
 class Scanner
-  TOKENS_OUT = './tmp/tabela-lexica.yaml'
+  ARQUIVO_SAIDA = './tabela-lexica.yaml'
 
   def initialize(file)
     @file = file
     @current_state = :default
-    File.open(TOKENS_OUT, 'w')
+    File.open(ARQUIVO_SAIDA, 'w')
   end
 
   def scan
@@ -33,7 +33,7 @@ class Scanner
   end
 
   def le_tokens(index, length = 1)
-    store = YAML::Store.new(TOKENS_OUT)
+    store = YAML::Store.new(ARQUIVO_SAIDA)
     store.transaction do
       ids = store.roots.slice(index, length)
       return ids.map { |id| store[id] }
@@ -43,7 +43,7 @@ class Scanner
   private
 
   def push_token(token)
-    store = YAML::Store.new(TOKENS_OUT)
+    store = YAML::Store.new(ARQUIVO_SAIDA)
     store.transaction do
       ultimo_id = store.roots.last || 0
       proximo_id = ultimo_id + 1
