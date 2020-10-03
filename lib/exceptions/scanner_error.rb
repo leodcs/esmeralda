@@ -1,8 +1,8 @@
 class ScannerError < StandardError
-  def initialize(unexpected_text, line, column)
-    @unexpected_text = unexpected_text
-    @line = line
-    @column = column
+  def initialize(scanner, posicao)
+    @scanner = scanner
+    @linha = posicao.linha
+    @coluna = posicao.coluna
 
     super(error_message)
   end
@@ -10,6 +10,10 @@ class ScannerError < StandardError
   private
 
   def error_message
-    "ERRO 01: Identificador ou símbolo inválido. #{@unexpected_text.inspect} - Linha #{@line}, Coluna #{@column}."
+    "ERRO 01: Identificador ou símbolo inválido. \"#{texto_invalido}\" - Linha #{@linha}, Coluna #{@coluna}."
+  end
+
+  def texto_invalido
+    @scanner.rest.split(/[\s*|;|$]/).first
   end
 end

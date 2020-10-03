@@ -8,6 +8,6 @@ class UndeclaredVarError < StandardError
   private
 
   def error_message
-    "ERRO 04: Identificador #{@token.match.inspect} não declarado. Linha #{@token.linha} Coluna #{@token.coluna}."
+    "ERRO 04: Identificador \"#{@token.match}\" não declarado. Linha #{@token.linha} Coluna #{@token.coluna}."
   end
 end

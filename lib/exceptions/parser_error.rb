@@ -25,7 +25,7 @@ class ParserError < StandardError
   private
 
   def error_message
-    "ERRO 02: Símbolo #{@token.match.inspect} inesperado. Esperando #{expected_types}#{position}."
+    "ERRO 02: Símbolo \"#{@token.match}\" inesperado. Esperando #{expected_types}#{position}."
   end
 
   # Se o tipo esperado for uma chave na constante SYMBOLS,

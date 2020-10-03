@@ -1,7 +1,9 @@
 Dir['./lib/config/**/*.rb'].sort.each { |config| require config }
 require 'colorize'
 require 'tty-reader'
+require 'strscan'
 require 'yaml/store'
+require './lib/posicao'
 require './lib/token'
 require './lib/scanner'
 require './lib/parser'
@@ -10,12 +12,6 @@ require './lib/nodes/node'
 require './lib/nodes/expression'
 Dir['./lib/exceptions/*.rb'].each { |exception| require exception }
 Dir['./lib/nodes/*.rb'].sort.each { |node| require node }
-
-# Configura pasta atual para ser a mesma do executável
-if ENV['OCRA_EXECUTABLE']
-  pasta = File.dirname(ENV['OCRA_EXECUTABLE'])
-  Dir.chdir(pasta)
-end
 
 class Compiler
   def compile(file)
@@ -37,6 +33,8 @@ class Compiler
   end
 end
 
+# Configura pasta atual para ser a mesma do executável
+Dir.chdir File.dirname(ENV['OCRA_EXECUTABLE']) if ENV['OCRA_EXECUTABLE']
 reader = TTY::Reader.new
 
 reader.on(:keyescape) do

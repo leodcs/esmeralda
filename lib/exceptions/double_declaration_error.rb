@@ -8,7 +8,6 @@ class DoubleDeclarationError < StandardError
   private
 
   def error_message
-    "ERRO 06: Variável #{@name.match.inspect} declarada em duplicidade. "\
-    "Linha #{@name.linha} Coluna #{@name.coluna}."
+    "ERRO 06: Variável \"#{@name.match}\" declarada em duplicidade. Linha #{@name.linha} Coluna #{@name.coluna}."
   end
 end

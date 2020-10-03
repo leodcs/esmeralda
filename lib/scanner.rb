@@ -5,20 +5,17 @@ class Scanner
 
   def initialize(file)
     @file = file
-    @current_state = :default
+    @modo = :normal
     File.open(ARQUIVO_SAIDA, 'w')
   end
 
   def scan
     @file.lines.each_with_index do |line, index|
-      @full_line = line.upcase
-      @text_to_scan = @full_line.strip
-      @line_number = index + 1
+      @scanner = StringScanner.new(line.upcase.strip)
+      @posicao = Posicao.new(linha: index, coluna: @scanner.pointer)
 
-      until @text_to_scan.empty? do
-        if @current_state == :comment || @text_to_scan.start_with?('{')
-          ignora_comentarios
-        elsif @current_state == :default && (token = get_next_token)
+      until @scanner.eos?
+        if @modo == :normal && (token = get_next_token)
           push_token(token)
         else
           erro_lexico
@@ -42,43 +39,19 @@ class Scanner
 
   private
 
-  def push_token(token)
-    store = YAML::Store.new(ARQUIVO_SAIDA)
-    store.transaction do
-      ultimo_id = store.roots.last || 0
-      proximo_id = ultimo_id + 1
-
-      store[proximo_id] = token
-    end
-  end
-
-  def ignora_comentarios
-    if @text_to_scan.start_with?('{') && !@text_to_scan.end_with?('}')
-      @current_state = :comment
-    elsif @current_state == :comment && @text_to_scan.end_with?('}')
-      @current_state = :default
-    end
-
-    @text_to_scan = ''
-  end
-
-  def current_column
-    @full_line.index(@text_to_scan) + 1
-  end
-
   def get_next_token
     token_achado = nil
 
     Token.types.each do |type, re|
-      regexp = /\A(#{re.source})/i
-      matches = @text_to_scan.match(regexp)
-      next if matches.nil?
+      @scanner.skip(/\s*/) # Ignora espaco(s) em branco
+      regexp = /#{re.source}/i # Ignora case na string
+      @posicao.coluna = @scanner.pointer + 1
+      match = @scanner.scan(regexp)
+      next unless match
 
       token = type.to_s
-      lexema = valor = nil
-      match = matches[0]
-      coluna = current_column
-      @text_to_scan = @text_to_scan.delete_prefix(match).strip
+      lexema = nil
+      valor = nil
 
       case type
       when :INTEGER, :REAL
@@ -91,7 +64,7 @@ class Scanner
         token = match
       end
 
-      token_achado = Token.new(match, type, token, lexema, valor, @line_number, coluna)
+      token_achado = Token.new(match, type, token, lexema, valor, @posicao.linha, @posicao.coluna)
 
       break(token_achado)
     end
@@ -99,7 +72,17 @@ class Scanner
     return token_achado
   end
 
+  def push_token(token)
+    store = YAML::Store.new(ARQUIVO_SAIDA)
+    store.transaction do
+      ultimo_id = store.roots.last || 0
+      proximo_id = ultimo_id + 1
+
+      store[proximo_id] = token
+    end
+  end
+
   def erro_lexico
-    raise ScannerError.new(@text_to_scan, @line_number, current_column)
+    raise ScannerError.new(@scanner, @posicao)
   end
 end

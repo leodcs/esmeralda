@@ -10,7 +10,6 @@ class IncompatibleTypesError < StandardError
   private
 
   def error_message
-    "ERRO 03: Tipos Incompatíveis. #{@expected_type} e #{@type_found}. "\
-    "Linha #{@token&.linha} Coluna #{@token&.coluna}"
+    "ERRO 03: Tipos Incompatíveis. #{@expected_type} e #{@type_found}. Linha #{@token&.linha} Coluna #{@token&.coluna}"
   end
 end
