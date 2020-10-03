@@ -54,9 +54,12 @@ class Scanner
       valor = nil
 
       case type
-      when :INTEGER, :REAL
+      when :INTEGER
         token = 'Numerico'
         valor = match.to_i
+      when :REAL
+        token = 'Numerico'
+        valor = BigDecimal(match)
       when :ID, :STRING
         token = 'ID'
         lexema = match
