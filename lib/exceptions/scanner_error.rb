@@ -1,6 +1,6 @@
 class ScannerError < StandardError
-  def initialize(scanner, posicao)
-    @scanner = scanner
+  def initialize(fita, posicao)
+    @fita = fita
     @linha = posicao.linha
     @coluna = posicao.coluna
 
@@ -14,6 +14,6 @@ class ScannerError < StandardError
   end
 
   def texto_invalido
-    @scanner.rest.split(/[\s*|;|$]/).first
+    @fita.rest.split(/[\s*|;|$]/).first
   end
 end

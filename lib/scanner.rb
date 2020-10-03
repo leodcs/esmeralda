@@ -3,19 +3,22 @@
 class Scanner
   ARQUIVO_SAIDA = './tabela-lexica.yaml'
 
-  def initialize(file)
-    @file = file
+  def initialize(arquivo)
+    @arquivo = arquivo
     @modo = :normal
     File.open(ARQUIVO_SAIDA, 'w')
   end
 
   def scan
-    @file.lines.each_with_index do |line, index|
-      @scanner = StringScanner.new(line.upcase.strip)
-      @posicao = Posicao.new(linha: index, coluna: @scanner.pointer)
+    @arquivo.lines.each_with_index do |line, index|
+      @fita = StringScanner.new(line.upcase.strip)
+      @posicao = Posicao.new(linha: index, coluna: @fita.pointer)
 
-      until @scanner.eos?
-        if @modo == :normal && (token = get_next_token)
+      # Repete até chegar no fim da linha
+      until @fita.eos? do
+        if @modo == :comentario || @fita.scan(/\s*{/)
+          ignora_comentarios
+        elsif @modo == :normal && (token = get_next_token)
           push_token(token)
         else
           erro_lexico
@@ -43,10 +46,10 @@ class Scanner
     token_achado = nil
 
     Token.types.each do |type, re|
-      @scanner.skip(/\s*/) # Ignora espaco(s) em branco
+      @fita.skip(/\s*/) # Ignora espaco(s) em branco
       regexp = /#{re.source}/i # Ignora case na string
-      @posicao.coluna = @scanner.pointer + 1
-      match = @scanner.scan(regexp)
+      @posicao.coluna = @fita.pointer + 1
+      match = @fita.scan(regexp)
       next unless match
 
       token = type.to_s
@@ -85,7 +88,19 @@ class Scanner
     end
   end
 
+  def ignora_comentarios
+    fecha_chave = Token.types[:FECHA_CHAVE]
+
+    if @fita.exist?(fecha_chave)
+      @fita.skip_until(fecha_chave)
+      @modo = :normal
+    else
+      @modo = :comentario
+      @fita.terminate
+    end
+  end
+
   def erro_lexico
-    raise ScannerError.new(@scanner, @posicao)
+    raise ScannerError.new(@fita, @posicao)
   end
 end
