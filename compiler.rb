@@ -36,9 +36,9 @@ end
 
 # Configura pasta atual para ser a mesma do executável
 Dir.chdir File.dirname(ENV['OCRA_EXECUTABLE']) if ENV['OCRA_EXECUTABLE']
-reader = TTY::Reader.new
+reader = TTY::Reader.new(interrupt: :exit)
 
-reader.on(:keyescape) do
+reader.on(:keyescape, :keyctrl_d) do
   puts 'Finalizando...'
   exit
 end
