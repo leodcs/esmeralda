@@ -11,7 +11,12 @@ class Scanner
 
   def scan
     @arquivo.lines.each_with_index do |line, index|
-      @fita = StringScanner.new(line.upcase.strip)
+      texto_formatado = line.upcase # Modifica texto da linha para UPCASE
+      texto_formatado.gsub!(/\u00a0/, ' ') # padroniza espacos em branco
+      texto_formatado.delete!("\n") # remove quebras de linhas
+      next if texto_formatado.strip.blank? # Ignora linha em branco
+
+      @fita = StringScanner.new(texto_formatado)
       @posicao = Posicao.new(linha: index, coluna: @fita.pointer)
 
       # Repete até chegar no fim da linha
@@ -45,10 +50,9 @@ class Scanner
   def get_next_token
     token_achado = nil
 
-    Token.types.each do |type, re|
-      @fita.skip(/\s*/) # Ignora espaco(s) em branco
-      regexp = /#{re.source}/i # Ignora case na string
+    Token.types.each do |type, regexp|
       @posicao.coluna = @fita.pointer + 1
+      @fita.skip(/[[:space:]]*/) # Pula espaco(s) em branco no comeco da linha
       match = @fita.scan(regexp)
       next unless match
 

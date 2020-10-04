@@ -14,12 +14,13 @@ class ScannerError < StandardError
   end
 
   def texto_invalido
-    rest = @fita.rest.split(/[\s*|;|$]/).first
+    resto = @fita.rest.split(/[\s*|;|$]/).first
+    return @fita.rest if resto.blank?
 
-    if rest.match?(/\w+/)
-      return rest
+    if resto.match?(/\w+/)
+      return resto
     else
-      return rest[0]
+      return resto[0]
     end
   end
 end
