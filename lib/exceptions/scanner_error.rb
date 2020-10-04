@@ -13,11 +13,13 @@ class ScannerError < StandardError
     "ERRO 01: Identificador ou símbolo inválido. \"#{texto_invalido}\" - Linha #{@linha}, Coluna #{@coluna}."
   end
 
+  # Se o texto invalido comecar com uma string, mostra a string restante
+  # Se nao, mostra o primeiro caractere invalido.
   def texto_invalido
     resto = @fita.rest.split(/[\s*|;|$]/).first
     return @fita.rest if resto.blank?
 
-    if resto.match?(/\w+/)
+    if resto.match?(/^[a-zA-Z]+/)
       return resto
     else
       return resto[0]
