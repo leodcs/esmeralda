@@ -1,4 +1,4 @@
-*.pas
+entradas/
 tabela-lexica.yaml
 parse.dot
 parse.png

@@ -1,3 +1,7 @@
+require './lib/nodes/node'
+require './lib/nodes/expression'
+Dir['./lib/nodes/*.rb'].sort.each { |node| require node }
+
 class Parser
   attr_reader :declarations, :assignments, :identifiers, :calls
 
@@ -167,7 +171,7 @@ class Parser
   def chamada
     node = comando_all
 
-    if node.present?
+    unless node.vazio?
       @calls << node
       return node
     end
@@ -320,7 +324,7 @@ class Parser
   def consome(tipo_esperado)
     token = proximo_token
 
-    if token.present? && token.type == tipo_esperado
+    if token && token.type == tipo_esperado
       @ponteiro = @ponteiro + 1
       return token
     else

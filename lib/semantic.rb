@@ -21,7 +21,7 @@ class Semantic
       (index > 0) && declaracoes_passadas.include?(declaration.name.match)
     end
 
-    if primeira_duplicada.present?
+    unless primeira_duplicada.vazio?
       erro_dupla_declaracao(primeira_duplicada)
     end
   end
@@ -45,7 +45,7 @@ class Semantic
     @parse.calls.each do |call|
       invalid_param = call.invalid_params.first
 
-      if invalid_param.present?
+      unless invalid_param.vazio?
         erro_tipos_incompativeis(call.param_type, invalid_param)
       end
     end

@@ -17,7 +17,7 @@ class ScannerError < StandardError
   # Se nao, mostra o primeiro caractere invalido.
   def texto_invalido
     resto = @fita.rest.split(/[\s*|;|$]/).first
-    return @fita.rest if resto.blank?
+    return @fita.rest if resto.vazio?
 
     if resto.match?(/^[a-zA-Z]+/)
       return resto
