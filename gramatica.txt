@@ -16,7 +16,7 @@
 
 <comando_basico> ::= <atribuicao> | <bloco> | <chamada>
 
-<chamada> ::= comando_all
+<chamada> ::= <comando_all>
 
 <comando_all> ::= All ( <id>  [, <id>]* );
 

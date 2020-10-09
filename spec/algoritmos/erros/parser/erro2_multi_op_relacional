@@ -1,0 +1,6 @@
+program programa;
+begin
+begin
+  if ((x > 1) NOT (x < 3)) then
+end;
+end.

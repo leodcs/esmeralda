@@ -1,0 +1,7 @@
+Program teste;
+Array a;
+Begin
+Begin
+   a := [];
+End;
+End.

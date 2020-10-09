@@ -1,0 +1,11 @@
+program programa; { Isso aqui é um comentário e deve ser ignorado }
+{
+Isso aqui também é
+um comentário
+e também deve ser ignorado
+}
+begin
+begin
+  { {{{ }
+end;
+end.
