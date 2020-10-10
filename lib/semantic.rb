@@ -8,6 +8,8 @@ class Semantic
     check_assignments
     check_identifiers
     check_call_params
+
+    self
   end
 
   private

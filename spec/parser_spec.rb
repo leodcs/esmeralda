@@ -12,6 +12,8 @@ RSpec.describe Parser do
     expect(parse.assignments.count).to eq(14)
     expect(parse.identifiers.count).to eq(28)
     expect(parse.calls.count).to eq(2)
+
+    File.delete(Scanner::ARQUIVO_SAIDA)
   end
 
   it 'Detecta símbolos inesperados' do
@@ -31,6 +33,8 @@ RSpec.describe Parser do
       ['erro2_op_relacional', 'ERRO 02: Símbolo "+" inesperado. Esperando OP_RELACIONAL - Linha 4, Coluna 9.'],
       ['erro2_op_arit', 'ERRO 02: Símbolo "-" inesperado. Esperando ID ou INTEGER ou REAL - Linha 4, Coluna 12.'],
       ['erro2_multi_arit', 'ERRO 02: Símbolo "3" inesperado. Esperando "(" - Linha 4, Coluna 18.'],
+      ['erro2_reservada1', 'ERRO 02: Símbolo "IF" inesperado. Esperando ID ou INTEGER ou REAL ou "(" - Linha 5, Coluna 10.'],
+      ['erro2_reservada2', 'ERRO 02: Símbolo "STRING" inesperado. Esperando END - Linha 5, Coluna 3.']
     ]
 
     files.each do |file_name, message|
@@ -43,5 +47,7 @@ RSpec.describe Parser do
         expect(e.message).to eq(message)
       end
     end
+
+    File.delete(Scanner::ARQUIVO_SAIDA)
   end
 end

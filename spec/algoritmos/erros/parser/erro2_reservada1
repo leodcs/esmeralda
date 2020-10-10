@@ -1,0 +1,7 @@
+program programa;
+Integer num;
+begin
+begin
+  num := if;
+end;
+end.

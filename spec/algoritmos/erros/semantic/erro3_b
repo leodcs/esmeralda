@@ -1,0 +1,9 @@
+program programa;
+REAL y;
+Integer x;
+begin
+begin
+  y := 9/2;
+  x := ((1 + 2) + (4 * 5)) - (y + 7);
+end;
+end.

@@ -1,0 +1,7 @@
+program programa;
+REAL r;
+begin
+begin
+  r := 10;
+end;
+end.

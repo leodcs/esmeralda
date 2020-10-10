@@ -1,0 +1,7 @@
+program programa;
+STRING a;
+begin
+begin
+  a := 1;
+end;
+end.

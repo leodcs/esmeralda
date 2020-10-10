@@ -1,0 +1,9 @@
+program programa;
+STRING s;
+INTEGER i;
+begin
+begin
+i := 9;
+all(s, i);
+end;
+end.

@@ -1,0 +1,9 @@
+program programa;
+REAL x;
+INTEGER y;
+begin
+begin
+x := 4;
+y := 3 + x;
+end;
+end.

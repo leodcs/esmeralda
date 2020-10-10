@@ -1,0 +1,8 @@
+program programa;
+INTEGER i;
+begin
+begin
+i := 2;
+i := ((3 + 7) - (i * 3)) + (j);
+end;
+end.

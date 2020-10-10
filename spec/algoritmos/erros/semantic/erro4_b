@@ -1,0 +1,10 @@
+program programa;
+Integer x;
+begin
+begin
+  x := 12;
+  if (Soma > x) then
+  begin
+  end;
+end;
+end.
