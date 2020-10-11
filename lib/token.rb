@@ -1,16 +1,15 @@
 # frozen_string_literal: true
 
 class Token
-  attr_reader :match, :type, :token, :lexema, :valor, :linha, :coluna
+  attr_reader :match, :type, :token, :lexema, :valor, :posicao
 
-  def initialize(match, type, token = nil, lexema = nil, valor = nil, linha = nil, coluna = nil)
+  def initialize(match, type, token = nil, lexema = nil, valor = nil, posicao = nil)
     @match = match
     @type = type
     @token = token
     @lexema = lexema
     @valor = valor
-    @linha = linha
-    @coluna = coluna
+    @posicao = posicao
   end
 
   def Token.letra

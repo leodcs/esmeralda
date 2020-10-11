@@ -49,8 +49,10 @@ class ParserError < StandardError
   # Verifica se o @token encontrado tem linha e coluna.
   # Se for um token de FIM de arquivo nao tera
   def position
-    if @token.linha && @token.coluna
-      return " - Linha #{@token.linha}, Coluna #{@token.coluna}"
+    posicao = @token.posicao
+
+    if !posicao.vazio?
+      return " - Linha #{posicao.linha}, Coluna #{posicao.coluna}"
     end
   end
 end

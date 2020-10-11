@@ -1,6 +1,7 @@
 class DoubleDeclarationError < StandardError
   def initialize(declaration)
-    @name = declaration.name
+    @token = declaration.name
+    @posicao = @token.posicao
 
     super(error_message)
   end
@@ -8,6 +9,6 @@ class DoubleDeclarationError < StandardError
   private
 
   def error_message
-    "ERRO 06: Variável \"#{@name.match}\" declarada em duplicidade. Linha #{@name.linha} Coluna #{@name.coluna}."
+    "ERRO 06: Variável \"#{@token.match}\" declarada em duplicidade. Linha #{@posicao.linha} Coluna #{@posicao.coluna}."
   end
 end

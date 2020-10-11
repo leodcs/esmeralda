@@ -103,7 +103,7 @@ class Scanner
         token = match
       end
 
-      token_achado = Token.new(match, type, token, lexema, valor, @posicao.linha, @posicao.coluna)
+      token_achado = Token.new(match, type, token, lexema, valor, @posicao)
 
       break(token_achado) # Para a iteracao caso encontre algum token
     end

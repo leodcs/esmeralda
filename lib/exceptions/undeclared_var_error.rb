@@ -1,6 +1,7 @@
 class UndeclaredVarError < StandardError
   def initialize(token)
     @token = token
+    @posicao = token.posicao
 
     super(error_message)
   end
@@ -8,6 +9,6 @@ class UndeclaredVarError < StandardError
   private
 
   def error_message
-    "ERRO 04: Identificador \"#{@token.match}\" não declarado. Linha #{@token.linha} Coluna #{@token.coluna}."
+    "ERRO 04: Identificador \"#{@token.match}\" não declarado. Linha #{@posicao.linha} Coluna #{@posicao.coluna}."
   end
 end
