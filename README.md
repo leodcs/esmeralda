@@ -15,6 +15,7 @@
 
 1. [Clique aqui](https://github.com/leodcs/esmeralda/releases/latest/download/esmeralda.exe) para baixar o executável da versão mais atualizada do compilador. <br>
 2. Abra o executável no Windows siga a instruções exibidas na tela. <br>
+  2.1. (Opcional) Nas configurações do Terminal, **desmarque** a "Opção de edição" > "Modo de Edição Rápida". Isso vai impedir um problema comum no Windows onde o script requer que alguma tecla seja pressionada para continuar a execução.
 
 Para ver as gramáticas válidas na linguagem veja o arquivo: [gramaticas.txt](https://github.com/leodcs/esmeralda/blob/master/gramaticas.txt)
 
