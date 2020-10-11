@@ -1,4 +1,5 @@
 Dir['./lib/config/**/*.rb'].sort.each { |config| require config }
+require 'pry'
 require 'colorize'
 require 'tty-reader'
 require './lib/scanner'

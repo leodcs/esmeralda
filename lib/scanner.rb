@@ -22,11 +22,15 @@ class Scanner
       texto_formatado.delete!("\n") # remove quebras de linhas
       next if texto_formatado.strip.vazio? # Ignora linha em branco
 
+      # "StringScanner" é uma classe interna do Ruby que recebe uma string de entrada,
+      # que nesse caso é o texto da linha atual, e permite varrê-la usando expressões regulares.
+      # Link para documentação: https://ruby-doc.org/stdlib-2.6.1/libdoc/strscan/rdoc/StringScanner.html
       @fita = StringScanner.new(texto_formatado)
       @posicao = Posicao.new(linha: index, coluna: @fita.pointer)
 
       # Repete até chegar no fim da linha
       until @fita.eos? do
+        # Se estiver no modo "comentario" ou o próximo caractere é um "{"
         if @modo == :comentario || @fita.scan(/\s*{/)
           ignora_comentarios
         elsif @modo == :normal && (token = get_next_token)
@@ -43,6 +47,10 @@ class Scanner
     return self
   end
 
+  # Usado para ler os tokens depois de gerar a tabela léxica
+  # le_tokens(0) => retorna o token na posicao zero, ou seja o primeiro token
+  # le_tokens(15, 3) => retorna 3 tokens a partir da posicao 15
+  # le_tokens(60..) => retorna todos os tokens a partir da posicao 60 até o final da tabela
   def le_tokens(index, length = 1)
     saida = arquivo_saida
     saida.transaction do
@@ -70,6 +78,7 @@ class Scanner
   def get_next_token
     token_achado = nil
 
+    # Itera em todos os tipos de tokens definidos em Token.types até encontrar um
     Token.types.each do |type, regexp|
       @posicao.coluna = @fita.pointer + 1
       @fita.skip(/[[:space:]]*/) # Pula espaco(s) em branco no comeco da linha
@@ -96,12 +105,13 @@ class Scanner
 
       token_achado = Token.new(match, type, token, lexema, valor, @posicao.linha, @posicao.coluna)
 
-      break(token_achado)
+      break(token_achado) # Para a iteracao caso encontre algum token
     end
 
     return token_achado
   end
 
+  # Escreve token no ARQUIVO_SAIDA da tabela léxica
   def push_token(token)
     saida = arquivo_saida
     saida.transaction do

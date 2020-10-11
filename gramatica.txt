@@ -2,9 +2,9 @@
 
 <programa> ::= <bloco_principal>
 
-<bloco_principal> ::= program <id>; [<decl_var>]* Begin <bloco> end.
+<bloco_principal> ::= program <id>; [<declaracao>]* Begin <bloco> end.
 
-<decl_var> ::= <tipo> <id> [,<id>]*;
+<declaracao> ::= <tipo> <id> [,<id>]*;
 
 <tipo> ::= INTEGER | REAL | STRING
 

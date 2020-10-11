@@ -1,0 +1,7 @@
+program programa;
+begin
+begin
+    If ((x <> 20) and (y = x)) then
+       <
+end;
+end.

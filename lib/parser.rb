@@ -6,10 +6,10 @@ class Parser
   attr_reader :declarations, :assignments, :identifiers, :calls
 
   def initialize
-    @ponteiro = 0
-    @calls = []
-    @assignments = []
-    @identifiers = []
+    @ponteiro = 0 # Indica o index na tabela léxica
+    @calls = [] # Vetor de chamadas para métodos. Ex.: all
+    @assignments = [] # Vetor para guardar atribuicoes
+    @identifiers = [] # Vetor para guardar chamada de variáveis
   end
 
   def parse
@@ -36,7 +36,8 @@ class Parser
     @declarations = declaracoes.flatten
 
     consome(:BEGIN)
-    body = bloco!
+    verifica_proximos(esperando: :bloco)
+    body = bloco
     consome(:END)
     consome(:PONTO)
 
@@ -56,20 +57,12 @@ class Parser
     return ::Nodes::Block.new(nodes)
   end
 
-  def bloco!
-    obriga_presenca_de(:bloco, :BEGIN)
-  end
-
   def comandos
     varios(:comando)
   end
 
   def comando
     comando_basico || iteracao || condicional
-  end
-
-  def comando!
-    obriga_presenca_de(:comando, [:ID, :WHILE, :REPEAT, :IF])
   end
 
   def condicional
@@ -79,18 +72,22 @@ class Parser
     consome(:IF)
     consome(:ABRE_PAREN)
 
-    then_body = expr_relacional!
+    verifica_proximos(esperando: :expr_relacional)
+    then_body = expr_relacional
     nodes << then_body
 
+    verifica_proximos(esperando: :fim_expr_relacional)
     consome(:FECHA_PAREN)
     consome(:THEN)
 
-    nodes << comando!
+    verifica_proximos(esperando: :comando)
+    nodes << comando
 
     else_body = nil
     if proximo?(:ELSE)
       consome(:ELSE)
-      nodes << else_body = comando!
+      verifica_proximos(esperando: :comando)
+      nodes << else_body = comando
     end
 
     return ::Nodes::Conditional.new(then_body, else_body, nodes)
@@ -98,10 +95,6 @@ class Parser
 
   def expr_relacional
     op_relacional || multi_op_relacional
-  end
-
-  def expr_relacional!
-    obriga_presenca_de(:expr_relacional, [:ABRE_PAREN, :ID, :INTEGER, :REAL])
   end
 
   def multi_op_relacional
@@ -126,19 +119,17 @@ class Parser
     return unless proximo?(:ID) || proximo?(:INTEGER) || proximo?(:REAL)
 
     nodes = []
-    nodes << val!
+    verifica_proximos(esperando: :val)
+    nodes << val
     operador = consome(:OP_RELACIONAL)
-    nodes << val!
+    verifica_proximos(esperando: :val)
+    nodes << val
 
     return ::Nodes::Expression.new(operador, nodes)
   end
 
   def val
     id || integer || real
-  end
-
-  def val!
-    obriga_presenca_de(:val, [:ID, :INTEGER, :REAL])
   end
 
   def id
@@ -203,32 +194,27 @@ class Parser
 
     name = consome(:ID)
     consome(:ATRIB)
-    nodes = expr_arit!
+    verifica_proximos(esperando: :expr_arit)
+    nodes = expr_arit
     consome(:PONTO_VIRGULA)
     @assignments << ::Nodes::Assignment.new(name, nodes)
 
     return @assignments.last
   end
 
-  def atribuicao!
-    obriga_presenca_de(:atribuicao, :ID)
-  end
-
   def expr_arit
     multi_arit || op_arit || val
-  end
-
-  def expr_arit!
-    obriga_presenca_de(:expr_arit, [:ID, :INTEGER, :REAL, :ABRE_PAREN])
   end
 
   def op_arit
     return unless proximo?(:ID, :OP_ARITMETICO) || proximo?(:INTEGER, :OP_ARITMETICO) || proximo?(:REAL, :OP_ARITMETICO)
 
     nodes = []
-    nodes << val!
+    verifica_proximos(esperando: :val)
+    nodes << val
     operator = consome(:OP_ARITMETICO)
-    nodes << val!
+    verifica_proximos(esperando: :val)
+    nodes << val
 
     return ::Nodes::Operation.new(operator, nodes)
   end
@@ -238,13 +224,15 @@ class Parser
 
     nodes = []
     consome(:ABRE_PAREN)
-    nodes << expr_arit!
+    verifica_proximos(esperando: :expr_arit)
+    nodes << expr_arit
     consome(:FECHA_PAREN)
 
     operador = consome(:OP_ARITMETICO)
 
     consome(:ABRE_PAREN)
-    nodes << expr_arit!
+    verifica_proximos(esperando: :expr_arit)
+    nodes << expr_arit
     consome(:FECHA_PAREN)
 
     return ::Nodes::Expression.new(operador, nodes)
@@ -259,7 +247,8 @@ class Parser
 
     consome(:WHILE)
     consome(:ABRE_PAREN)
-    expression = expr_relacional!
+    verifica_proximos(esperando: :expr_relacional)
+    expression = expr_relacional
     consome(:FECHA_PAREN)
     consome(:DO)
     nodes = comando
@@ -274,7 +263,8 @@ class Parser
     nodes = comando
     consome(:UNTIL)
     consome(:ABRE_PAREN)
-    expression = expr_relacional!
+    verifica_proximos(esperando: :expr_relacional)
+    expression = expr_relacional
     consome(:FECHA_PAREN)
     consome(:PONTO_VIRGULA)
 
@@ -306,21 +296,10 @@ class Parser
 
   ##### Métodos auxiliares
 
-  def proximo?(*tipos_esperados)
-    proximos = proximos(tipos_esperados.size)
-
-    return proximos.map(&:type) == tipos_esperados
-  end
-
-  def proximos(n)
-    $scan.le_tokens(@ponteiro, n)
-  end
-
-  def proximo_token
-    tokens = $scan.le_tokens(@ponteiro)
-    tokens.pop
-  end
-
+  # Esse é o método auxiliar mais importante.
+  # Ele verifica se o tipo do "proximo_token" é igual ao "tipo_esperado" recebido
+  # por parâmetro. Se for igual, incrementa o ponteiro e retorna o token.
+  # Se não for, levanta um erro sintático.
   def consome(tipo_esperado)
     token = proximo_token
 
@@ -328,18 +307,53 @@ class Parser
       @ponteiro = @ponteiro + 1
       return token
     else
-      erro_sintatico(tipo_esperado, token)
+      erro_sintatico(tipo_esperado)
     end
   end
 
-  def obriga_presenca_de(method, expected_types)
-    if (value = send(method))
-      return value
-    else
-      erro_sintatico(expected_types)
+  # Retorna true se os próximos tokens forem iguais aos
+  # "tipos_esperados" recebidos por parâmetro
+  def proximo?(*tipos_esperados)
+    proximos = proximos(tipos_esperados.size)
+
+    return proximos.map(&:type) == tipos_esperados
+  end
+
+  # Lê os "n" próximos tokens na tabela léxica gerada pelo Scanner
+  def proximos(n)
+    $scan.le_tokens(@ponteiro, n)
+  end
+
+  # Lê o próximo token (na posicao do "ponteiro") na tabela léxica
+  def proximo_token
+    tokens = $scan.le_tokens(@ponteiro)
+    tokens.pop
+  end
+
+  # Verifica se o tipo do "proximo_token" é um dos "tipos_esperados".
+  # Se não for, levanta um "erro_sintatico".
+  def verifica_proximos(options = {})
+    gramatica = options.fetch(:esperando)
+    tipos_esperados = follow.fetch(gramatica)
+
+    unless tipos_esperados.include?(proximo_token.type)
+      erro_sintatico(tipos_esperados)
     end
   end
 
+  # Usado definir os "tipos_esperados" que serão buscados no método "verifica_proximos"
+  def follow
+    { bloco: [:BEGIN],
+      val: [:ID, :INTEGER, :REAL],
+      comando: [:ID, :BEGIN, :ALL, :WHILE, :REPEAT, :IF],
+      expr_relacional: [:ABRE_PAREN, :ID, :INTEGER, :REAL],
+      fim_expr_relacional: [:FECHA_PAREN, :OP_BOOLEANO],
+      expr_arit: [:ID, :INTEGER, :REAL, :ABRE_PAREN] }
+  end
+
+  # Usado para definir gramaticas que tem * (repeticao).
+  # Por exemplo: Para definir uma gramática [declaracao]*, podemos usar:
+  # varios(:declaracao)
   def varios(metodo)
     resultados = []
 
@@ -350,7 +364,7 @@ class Parser
     return resultados
   end
 
-  def erro_sintatico(expected_types, token = nil)
+  def erro_sintatico(expected_types)
     raise ParserError.new(proximo_token, expected_types)
   end
 end
