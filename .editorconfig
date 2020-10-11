@@ -1,3 +1,0 @@
-(leo/disable-whitespace-mode)
-(auto-dim-other-buffers-mode -1)
-(setq column-number-indicator-zero-based nil)
