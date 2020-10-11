@@ -2,4 +2,7 @@ entradas/
 tabela-lexica.yaml
 parse.dot
 parse.png
+.editorconfig
+.ruby-version
+.rspec
 .rspec.status
