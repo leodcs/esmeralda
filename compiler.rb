@@ -37,7 +37,7 @@ end
 
 loop do
   puts 'Tecle ESC para encerrar ou digite o nome do arquivo e tecle Enter'
-  nome_arquivo = reader.read_line('Nome do arquivo (sem extensão): ').chomp
+  nome_arquivo = reader.read_line('Nome do arquivo: ').chomp
   next if nome_arquivo.vazio?
 
   if File.file?(nome_arquivo)
