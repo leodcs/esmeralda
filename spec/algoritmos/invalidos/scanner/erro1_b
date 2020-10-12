@@ -1,0 +1,7 @@
+Program programa;
+INTEGER a; \\ comentário inválido
+Begin
+Begin
+   a := 1;
+End;
+End.

@@ -1,45 +1,61 @@
-require '../lib/scanner'
-require '../lib/token'
+RSpec.describe 'Analisador Léxico' do
+  include_context 'Compilacao'
 
-RSpec.describe Scanner do
-  it 'Lê os tokens em um arquivo de entrada' do
-    arquivo = File.read('spec/algoritmos/algoritmo1')
-    scan = Scanner.new(arquivo).scan
+  let(:exception_class) { ScannerError }
+  let(:pasta_erros) { 'spec/algoritmos/invalidos/scanner' }
+  let(:pasta_comentarios) { 'spec/algoritmos/validos/comentarios' }
+
+  it 'não dá erro em algoritmo válido' do
+    scan = Scanner.new(algoritmo_valido).scan
     ignorados = [:ABRE_CHAVE, :FECHA_CHAVE, :FIM]
     expected_types = Token.types.keys.sort - ignorados
     types = scan.todos_tokens.map(&:type).uniq.sort - ignorados
-    File.delete(Scanner::ARQUIVO_SAIDA)
 
     expect(types).to eq(expected_types)
   end
 
-  it 'Detecta um token inválido' do
-    arquivo = File.read('spec/algoritmos/erros/scanner/erro1')
-    begin
-      Scanner.new(arquivo).scan
-    rescue StandardError => e
-      expect(e.class).to eq(ScannerError)
-      expect(e.message).to eq('ERRO 01: Identificador ou símbolo inválido. "[" - Linha 5, Coluna 9.')
+  it 'detecta token inválido: "["' do
+    espera_excecao('erro1_a') do |erro|
+      expect(erro).to eq('ERRO 01: Identificador ou símbolo inválido. "[" - Linha 5, Coluna 9.')
     end
   end
 
-  it 'Ignora comentários' do
-    tipos_validos = ['tipo1', 'tipo2', 'tipo3']
-    tipos_validos.each do |file_name|
-      arquivo = File.read("spec/algoritmos/comentarios/#{file_name}")
-      scan = Scanner.new(arquivo).scan
-
-      expect(scan.todos_tokens.count).to eq(10)
+  it 'detecta token inválido: "\"' do
+    espera_excecao('erro1_b') do |erro|
+      expect(erro).to eq('ERRO 01: Identificador ou símbolo inválido. "\" - Linha 2, Coluna 12.')
     end
+  end
 
-    arquivo = File.read('spec/algoritmos/erros/scanner/comentario')
-    begin
-      Scanner.new(arquivo).scan
-    rescue StandardError => e
-      expect(e.class).to eq(ScannerError)
-      expect(e.message).to eq('ERRO 01: Identificador ou símbolo inválido. "APÓS" - Linha 8, Coluna 39.')
+  it 'detecta token inválido: "SOMATÓRIO"' do
+    espera_excecao('erro1_c') do |erro|
+      expect(erro).to eq('ERRO 01: Identificador ou símbolo inválido. "SOMATÓRIO" - Linha 2, Coluna 1.')
     end
+  end
 
-    File.delete(Scanner::ARQUIVO_SAIDA)
+  it 'ignora comentários em uma linha' do
+    arquivo = le_arquivo(pasta_comentarios, 'umalinha')
+    scan = Scanner.new(arquivo).scan
+
+    expect(scan.todos_tokens.count).to eq(10)
+  end
+
+  it 'ignora comentários em múltiplas linhas' do
+    arquivo = le_arquivo(pasta_comentarios, 'multiplaslinhas')
+    scan = Scanner.new(arquivo).scan
+
+    expect(scan.todos_tokens.count).to eq(70)
+  end
+
+  it 'ignora comentários com multiplos "{"' do
+    arquivo = le_arquivo(pasta_comentarios, 'muitaschaves')
+    scan = Scanner.new(arquivo).scan
+
+    expect(scan.todos_tokens.count).to eq(43)
+  end
+
+  it 'lê tokens na mesma linha após fechar comentário' do
+    espera_excecao('comentario') do |erro|
+      expect(erro).to eq('ERRO 01: Identificador ou símbolo inválido. "APÓS" - Linha 8, Coluna 39.')
+    end
   end
 end

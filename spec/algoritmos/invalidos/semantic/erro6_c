@@ -3,8 +3,8 @@ Integer num;
 REAL x;
 STring letra;
 REAL decimal;
+STRIng numero, num;
 Integer numero;
-STRIng num;
 begin
 begin
 end;

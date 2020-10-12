@@ -1,0 +1,30 @@
+program programa; { Isso aqui é um comentário e deve ser ignorado }
+STRING A;
+STRING B;
+STRING C;
+STRING D;
+STRING E;
+STRING F;
+STRING G;
+STRING H;
+STRING I;
+STRING J;
+STRING K;
+{
+Isso aqui também é
+um comentário
+e também deve ser ignorado
+}
+STRING L;
+STRING M;
+STRING N;
+STRING O;
+STRING P;
+STRING Q;
+STRING R;
+STRING S;
+STRING T;
+begin
+begin
+end;
+end.

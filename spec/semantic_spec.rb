@@ -1,96 +1,84 @@
-require '../lib/scanner'
-require '../lib/parser'
-require '../lib/semantic'
+RSpec.describe 'Analisador Semântico' do
+  include_context 'Compilacao'
 
-RSpec.describe Semantic do
-  it 'Busca erros semânticos' do
-    arquivo = File.read('spec/algoritmos/algoritmo1')
-    $scan = Scanner.new(arquivo).scan
-    $parse = Parser.new.parse
-    semantic = Semantic.new($parse).analyze
+  let(:pasta_erros) { 'spec/algoritmos/invalidos/semantic' }
 
-    expect(semantic.class).to eq(Semantic)
+  it 'não dá erro em algoritmo válido' do
+    compila(algoritmo_valido)
 
-    File.delete(Scanner::ARQUIVO_SAIDA)
+    expect($semantic.class).to eq(Semantic)
   end
 
-  it 'Não dá erro com REAL recebendo inteiro' do
-    arquivo = File.read('spec/algoritmos/realcominteiro')
-    $scan = Scanner.new(arquivo).scan
-    $parse = Parser.new.parse
-    semantic = Semantic.new($parse).analyze
+  it 'não dá erro com REAL recebendo inteiro' do
+    arquivo = File.read('spec/algoritmos/validos/realcominteiro')
+    compila(arquivo)
 
-    expect(semantic.class).to eq(Semantic)
-
-    File.delete(Scanner::ARQUIVO_SAIDA)
+    expect($semantic.class).to eq(Semantic)
   end
 
-  it 'Detecta tipos incompatíveis' do
-    files = [
-      ['erro3_a', 'ERRO 03: Tipos Incompatíveis. STRING e INTEGER. Linha 5 Coluna 3'],
-      ['erro3_b', 'ERRO 03: Tipos Incompatíveis. INTEGER e REAL. Linha 7 Coluna 3'],
-      ['erro3_c', 'ERRO 03: Tipos Incompatíveis. INTEGER e REAL. Linha 7 Coluna 1'],
-      ['erro3_d', 'ERRO 03: Tipos Incompatíveis. STRING e INTEGER. Linha 7 Coluna 8'],
-    ]
-
-    files.each do |file_name, message|
-      arquivo = File.read("spec/algoritmos/erros/semantic/#{file_name}")
-      begin
-        $scan = Scanner.new(arquivo).scan
-        $parse = Parser.new.parse
-        Semantic.new($parse).analyze
-      rescue StandardError => e
-        expect(e.class).to eq(IncompatibleTypesError)
-        expect(e.message).to eq(message)
-      end
+  it 'detecta variável STRING recebendo INTEGER' do
+    espera_excecao('erro3_a') do |erro|
+      expect(erro).to eq('ERRO 03: Tipos Incompatíveis. STRING e INTEGER. Linha 5 Coluna 3')
     end
-
-    File.delete(Scanner::ARQUIVO_SAIDA)
   end
 
-
-  it 'Detecta identificador não declarado' do
-    files = [
-      ['erro4_a', 'ERRO 04: Identificador "SOMA" não declarado. Linha 6 Coluna 3.'],
-      ['erro4_b', 'ERRO 04: Identificador "SOMA" não declarado. Linha 6 Coluna 7.'],
-      ['erro4_c', 'ERRO 04: Identificador "S" não declarado. Linha 4 Coluna 5.'],
-      ['erro4_d', 'ERRO 04: Identificador "J" não declarado. Linha 6 Coluna 29.'],
-    ]
-
-    files.each do |file_name, message|
-      arquivo = File.read("spec/algoritmos/erros/semantic/#{file_name}")
-      begin
-        $scan = Scanner.new(arquivo).scan
-        $parse = Parser.new.parse
-        Semantic.new($parse).analyze
-      rescue StandardError => e
-        expect(e.class).to eq(UndeclaredVarError)
-        expect(e.message).to eq(message)
-      end
+  it 'detecta método ALL recebendo INTEGER como parâmetro' do
+    espera_excecao('erro3_d') do |erro|
+      expect(erro).to eq('ERRO 03: Tipos Incompatíveis. STRING e INTEGER. Linha 7 Coluna 8')
     end
-
-    File.delete(Scanner::ARQUIVO_SAIDA)
   end
 
-  it 'Detecta variável declarada em duplicidade' do
-    files = [
-      ['erro6_a', 'ERRO 06: Variável "YY" declarada em duplicidade. Linha 3 Coluna 6.'],
-      ['erro6_b', 'ERRO 06: Variável "ZERO" declarada em duplicidade. Linha 2 Coluna 38.'],
-      ['erro6_c', 'ERRO 06: Variável "NUM" declarada em duplicidade. Linha 7 Coluna 8.'],
-    ]
-
-    files.each do |file_name, message|
-      arquivo = File.read("spec/algoritmos/erros/semantic/#{file_name}")
-      begin
-        $scan = Scanner.new(arquivo).scan
-        $parse = Parser.new.parse
-        Semantic.new($parse).analyze
-      rescue StandardError => e
-        expect(e.class).to eq(DoubleDeclarationError)
-        expect(e.message).to eq(message)
-      end
+  it 'detecta variável INTEGER usando uma tipo REAL' do
+    espera_excecao('erro3_c') do |erro|
+      expect(erro).to eq('ERRO 03: Tipos Incompatíveis. INTEGER e REAL. Linha 7 Coluna 1')
     end
+  end
 
-    File.delete(Scanner::ARQUIVO_SAIDA)
+  it 'detecta variável INTEGER usando outra que recebe divisão' do
+    espera_excecao('erro3_b') do |erro|
+      expect(erro).to eq('ERRO 03: Tipos Incompatíveis. INTEGER e REAL. Linha 7 Coluna 3')
+    end
+  end
+
+  it 'detecta identificador não declarado usado em atribuicao' do
+    espera_excecao('erro4_a') do |erro|
+      expect(erro).to eq('ERRO 04: Identificador "SOMA" não declarado. Linha 6 Coluna 3.')
+    end
+  end
+
+  it 'detecta identificador não declarado usado em condicional' do
+    espera_excecao('erro4_b') do |erro|
+      expect(erro).to eq('ERRO 04: Identificador "SOMA" não declarado. Linha 6 Coluna 7.')
+    end
+  end
+
+  it 'detecta identificador não declarado usado no método ALL' do
+    espera_excecao('erro4_c') do |erro|
+      expect(erro).to eq('ERRO 04: Identificador "S" não declarado. Linha 4 Coluna 5.')
+    end
+  end
+
+  it 'detecta identificador não declarado usado em outra variável' do
+    espera_excecao('erro4_d') do |erro|
+      expect(erro).to eq('ERRO 04: Identificador "J" não declarado. Linha 6 Coluna 29.')
+    end
+  end
+
+  it 'detecta variável sendo declarada duas vezes na mesma linha' do
+    espera_excecao('erro6_b') do |erro|
+      expect(erro).to eq('ERRO 06: Variável "ZERO" declarada em duplicidade. Linha 2 Coluna 38.')
+    end
+  end
+
+  it 'detecta variável sendo declarada em duas linhas' do
+    espera_excecao('erro6_a') do |erro|
+      expect(erro).to eq('ERRO 06: Variável "YY" declarada em duplicidade. Linha 3 Coluna 6.')
+    end
+  end
+
+  it 'detecta variável sendo declarada em duas linhas com vírgula' do
+    espera_excecao('erro6_c') do |erro|
+      expect(erro).to eq('ERRO 06: Variável "NUM" declarada em duplicidade. Linha 6 Coluna 16.')
+    end
   end
 end
