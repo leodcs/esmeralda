@@ -1,4 +1,3 @@
-require 'pry' # TODO: remover
 Dir['./lib/config/**/*.rb'].sort.each { |config| require config }
 Dir['./lib/exceptions/*.rb'].each { |exception| require exception }
 Dir['./lib/exceptions/*.rb'].each { |exception| require exception }

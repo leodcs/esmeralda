@@ -1,7 +1,6 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    charlock_holmes (0.7.7)
     colorize (0.8.1)
     diff-lcs (1.4.4)
     rspec (3.9.0)
@@ -29,7 +28,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  charlock_holmes (~> 0.7.7)
   colorize (~> 0.8.1)
   rspec (~> 3.9)
   tty-reader (~> 0.8.0)

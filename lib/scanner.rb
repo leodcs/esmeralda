@@ -14,6 +14,10 @@ class Scanner
     File.open(ARQUIVO_SAIDA, 'w') # Cria um arquivo em branco para a tabela léxica
   end
 
+  def arquivo_saida
+    YAML::Store.new(ARQUIVO_SAIDA)
+  end
+
   # Essa é a função principal do Scanner.
   # Varre todas linhas do @arquivo e salva os tokens no ARQUIVO_SAIDA
   def scan
@@ -34,7 +38,7 @@ class Scanner
         if @modo == :comentario || @fita.scan(/\s*{/)
           ignora_comentarios
         elsif @modo == :normal && (token = get_next_token)
-          push_token(token)
+          push_token(token) unless token.type == :ESPACO
         else
           erro_lexico
         end
@@ -69,10 +73,6 @@ class Scanner
     le_tokens(0..)
   end
 
-  def arquivo_saida
-    YAML::Store.new(ARQUIVO_SAIDA)
-  end
-
   private
 
   def get_next_token
@@ -81,7 +81,6 @@ class Scanner
     # Itera em todos os tipos de tokens definidos em Token.types até encontrar um
     Token.types.each do |type, regexp|
       @posicao.coluna = @fita.pointer + 1
-      @fita.skip(/[[:space:]]*/) # Pula espaco(s) em branco no comeco da linha
       match = @fita.scan(regexp)
       next unless match
 
@@ -136,12 +135,16 @@ class Scanner
     end
   end
 
+  # Tentar padronizar o arquivo para o encoding UTF-8
   def padroniza_encoding(arquivo)
-    encoding = CharlockHolmes::EncodingDetector.detect(arquivo)[:encoding]
-    utf8 = CharlockHolmes::Converter.convert(arquivo, encoding, 'UTF-8')
-    arquivo = utf8.gsub(/\t/, ' ').gsub(/\u00a0/, ' ').gsub(160.chr('UTF-8'), ' ') # Padroniza espaços em branco
-
-    return arquivo
+    arquivo_limpo = arquivo.dup.force_encoding('UTF-8')
+    unless arquivo_limpo.valid_encoding?
+      arquivo_limpo = arquivo.encode('UTF-8', 'Windows-1252' )
+    end
+    return arquivo_limpo
+  rescue EncodingError
+    # Força para UTF-8, sobrescrevendo caracteres inválidos
+    arquivo.encode!('UTF-8', invalid: :replace, undef: :replace)
   end
 
   def erro_lexico

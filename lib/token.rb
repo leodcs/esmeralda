@@ -29,7 +29,8 @@ class Token
   end
 
   def Token.types
-    { :ALL => /\bALL\b/,
+    { :ESPACO => /[[:space:]]/,
+      :ALL => /\bALL\b/,
       :PROGRAM => /\bPROGRAM\b/,
       :BEGIN => /\bBEGIN\b/,
       :END => /\bEND\b/,

@@ -7,7 +7,7 @@ RSpec.describe 'Analisador Léxico' do
 
   it 'não dá erro em algoritmo válido' do
     scan = Scanner.new(algoritmo_valido).scan
-    ignorados = [:ABRE_CHAVE, :FECHA_CHAVE, :FIM]
+    ignorados = [:ESPACO, :ABRE_CHAVE, :FECHA_CHAVE, :FIM]
     expected_types = Token.types.keys.sort - ignorados
     types = scan.todos_tokens.map(&:type).uniq.sort - ignorados
 
