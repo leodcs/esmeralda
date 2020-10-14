@@ -1,6 +1,7 @@
+require 'bigdecimal'
+require 'charlock_holmes'
 require 'strscan'
 require 'yaml/store'
-require 'bigdecimal'
 require './lib/posicao'
 require './lib/token'
 
@@ -8,18 +9,17 @@ class Scanner
   ARQUIVO_SAIDA = './tabela-lexica.yaml'
 
   def initialize(arquivo)
-    @arquivo = arquivo
+    @arquivo = padroniza_encoding(arquivo)
     @modo = :normal
-    File.open(ARQUIVO_SAIDA, 'w')
+    File.open(ARQUIVO_SAIDA, 'w') # Cria um arquivo em branco para a tabela léxica
   end
 
   # Essa é a função principal do Scanner.
   # Varre todas linhas do @arquivo e salva os tokens no ARQUIVO_SAIDA
   def scan
     @arquivo.lines.each_with_index do |line, index|
-      texto_formatado = line.upcase # Modifica texto da linha para UPCASE
-      texto_formatado.gsub!(/\u00a0/, ' ') # padroniza espacos em branco
-      texto_formatado.delete!("\n") # remove quebras de linhas
+      texto_formatado = line.rstrip.chomp # Remove quebras de linhas (\n) e espaços desnecessarios no fim da linha
+      texto_formatado.upcase! # Modifica texto da linha para UPCASE
       next if texto_formatado.strip.vazio? # Ignora linha em branco
 
       # "StringScanner" é uma classe interna do Ruby que recebe uma string de entrada,
@@ -125,6 +125,8 @@ class Scanner
   def ignora_comentarios
     fecha_chave = Token.types[:FECHA_CHAVE]
 
+    # Se tiver "}" na mesma linha, move o ponteiro para depois do "}".
+    # Se não tiver, coloca no modo "comentario" e ignora a linha atual inteira
     if @fita.exist?(fecha_chave)
       @fita.skip_until(fecha_chave)
       @modo = :normal
@@ -132,6 +134,14 @@ class Scanner
       @modo = :comentario
       @fita.terminate
     end
+  end
+
+  def padroniza_encoding(arquivo)
+    encoding = CharlockHolmes::EncodingDetector.detect(arquivo)[:encoding]
+    utf8 = CharlockHolmes::Converter.convert(arquivo, encoding, 'UTF-8')
+    arquivo = utf8.gsub(/\t/, ' ').gsub(/\u00a0/, ' ').gsub(160.chr('UTF-8'), ' ') # Padroniza espaços em branco
+
+    return arquivo
   end
 
   def erro_lexico
