@@ -5,8 +5,8 @@ class Semantic
 
   def analyze
     check_declarations
-    check_assignments
     check_identifiers
+    check_assignments
     check_call_params
 
     self
