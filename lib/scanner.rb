@@ -1,5 +1,4 @@
 require 'bigdecimal'
-require 'charlock_holmes'
 require 'strscan'
 require 'yaml/store'
 require './lib/posicao'
