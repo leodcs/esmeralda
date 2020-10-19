@@ -9,10 +9,10 @@ module Nodes
     end
 
     def type
-      if declaration.type == :real && first_node.type == :integer
+      if declaration.type == :real && nodes.first.type == :integer
         return :real
       else
-        first_node.type
+        nodes.first.type
       end
     end
 
@@ -20,12 +20,6 @@ module Nodes
       $parse.declarations.find do |declaration|
         declaration.name.match == name.match
       end
-    end
-
-    private
-
-    def first_node
-      nodes.first
     end
   end
 end

@@ -4,16 +4,17 @@ RSpec.describe 'Analisador Semântico' do
   let(:pasta_erros) { 'spec/algoritmos/invalidos/semantic' }
 
   it 'não dá erro em algoritmo válido' do
-    compila(algoritmo_valido)
+    expect{ compila(algoritmo_valido) }.not_to raise_error
+  end
 
-    expect($semantic.class).to eq(Semantic)
+  it 'não dá erro com variável recebendo ela mesma' do
+    arquivo = File.read('spec/algoritmos/validos/autoatribuicao')
+    expect { compila(arquivo) }.not_to raise_error
   end
 
   it 'não dá erro com REAL recebendo inteiro' do
     arquivo = File.read('spec/algoritmos/validos/realcominteiro')
-    compila(arquivo)
-
-    expect($semantic.class).to eq(Semantic)
+    expect { compila(arquivo) }.not_to raise_error
   end
 
   it 'detecta variável STRING recebendo INTEGER' do

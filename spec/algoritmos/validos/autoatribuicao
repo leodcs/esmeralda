@@ -1,0 +1,7 @@
+PROGRAM programa;
+   REAL x;
+BEGIN
+  BEGIN
+     x := 1 + x;
+  END;
+END.
