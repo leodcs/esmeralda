@@ -5,7 +5,7 @@ RSpec.describe 'Analisador Sintático' do
   let(:pasta_erros) { 'spec/algoritmos/invalidos/parser' }
 
   it 'não dá erro em algoritmo válido' do
-    compila(algoritmo_valido)
+    expect { compila(algoritmo_valido) }.not_to raise_error
 
     expect($parse.class).to eq(Parser)
     expect($parse.declarations.count).to eq(14)

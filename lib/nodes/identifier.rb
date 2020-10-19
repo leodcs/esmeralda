@@ -9,7 +9,7 @@ module Nodes
     end
 
     def type
-      if assignment && assignment.name.match == name.match
+      if assignment && !auto_atribuicao?
         return assignment.type
       elsif declaration
         return declaration.type
@@ -26,6 +26,13 @@ module Nodes
       $parse.assignments.find do |assignment|
         self.name.match == assignment.name.match
       end
+    end
+
+
+    private
+
+    def auto_atribuicao?
+      assignment.children.include?(self)
     end
   end
 end
