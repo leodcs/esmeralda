@@ -1,20 +1,16 @@
 require 'bigdecimal'
 require 'strscan'
-require 'yaml/store'
-require './lib/posicao'
-require './lib/token'
+require_relative 'posicao'
+require_relative 'token'
+require_relative 'arquivo_saida'
 
 class Scanner
-  ARQUIVO_SAIDA = './tabela-lexica.yaml'
+  SAIDA = './tabela-lexica.yaml'
 
   def initialize(arquivo)
     @arquivo = padroniza_encoding(arquivo)
     @modo = :normal
-    File.open(ARQUIVO_SAIDA, 'w') # Cria um arquivo em branco para a tabela léxica
-  end
-
-  def arquivo_saida
-    YAML::Store.new(ARQUIVO_SAIDA)
+    @tokens = ArquivoSaida.new(SAIDA)
   end
 
   # Essa é a função principal do Scanner.
@@ -51,20 +47,8 @@ class Scanner
   end
 
   # Usado para ler os tokens depois de gerar a tabela léxica
-  # le_tokens(0) => retorna o token na posicao zero, ou seja o primeiro token
-  # le_tokens(15, 3) => retorna 3 tokens a partir da posicao 15
-  # le_tokens(60..) => retorna todos os tokens a partir da posicao 60 até o final da tabela
   def le_tokens(index, length = 1)
-    saida = arquivo_saida
-    saida.transaction do
-      roots = saida.roots
-      if index.class == Range
-        ids = roots.slice(index)
-      else
-        ids = roots.slice(index, length)
-      end
-      return ids.map { |id| saida[id] }
-    end
+    @tokens.read(index, length)
   end
 
   # Le todos os tokens do primeiro (0) em diante (..)
@@ -111,13 +95,7 @@ class Scanner
 
   # Escreve token no ARQUIVO_SAIDA da tabela léxica
   def push_token(token)
-    saida = arquivo_saida
-    saida.transaction do
-      ultimo_id = saida.roots.last || 0
-      proximo_id = ultimo_id + 1
-
-      saida[proximo_id] = token
-    end
+    @tokens.push(token)
   end
 
   def ignora_comentarios

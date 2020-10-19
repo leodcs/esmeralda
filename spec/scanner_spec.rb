@@ -11,7 +11,7 @@ RSpec.describe 'Analisador Léxico' do
     expected_types = Token.types.keys.sort - ignorados
     types = scan.todos_tokens.map(&:type).uniq.sort - ignorados
 
-    expect(types).to eq(expected_types)
+    expect(types).to match_array(expected_types)
   end
 
   it 'detecta token inválido: "["' do

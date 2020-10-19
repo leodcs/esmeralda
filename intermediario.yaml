@@ -1,0 +1,96 @@
+---
+1: !ruby/object:Quadrupla
+  operador: ":="
+  arg1: 10
+  arg2:
+  resultado: I4
+2: !ruby/object:Quadrupla
+  operador: ":="
+  arg1: 20
+  arg2:
+  resultado: I4
+3: !ruby/object:Quadrupla
+  operador: ":="
+  arg1: 30
+  arg2:
+  resultado: I2
+4: !ruby/object:Quadrupla
+  operador: ":="
+  arg1: !ruby/object:BigDecimal 18:0.15e1
+  arg2:
+  resultado: R1
+5: !ruby/object:Quadrupla
+  operador: ":="
+  arg1: I4
+  arg2:
+  resultado: I5
+6: !ruby/object:Quadrupla
+  operador: ":="
+  arg1: R1
+  arg2:
+  resultado: R2
+7: !ruby/object:Quadrupla
+  operador: "+"
+  arg1: I1
+  arg2: R1
+  resultado: R3
+8: !ruby/object:Quadrupla
+  operador: "/"
+  arg1: I1
+  arg2: 10
+  resultado: tmp1
+9: !ruby/object:Quadrupla
+  operador: "+"
+  arg1: R1
+  arg2: I2
+  resultado: tmp2
+10: !ruby/object:Quadrupla
+  operador: "*"
+  arg1: tmp1
+  arg2: tmp2
+  resultado: tmp3
+11: !ruby/object:Quadrupla
+  operador: ":="
+  arg1: tmp3
+  arg2:
+  resultado: R4
+12: !ruby/object:Quadrupla
+  operador: ":="
+  arg1: R4
+  arg2:
+  resultado: tmp4
+13: !ruby/object:Quadrupla
+  operador: "/"
+  arg1: I1
+  arg2: !ruby/object:BigDecimal 18:0.152e2
+  resultado: tmp5
+14: !ruby/object:Quadrupla
+  operador: "+"
+  arg1: R1
+  arg2: I2
+  resultado: tmp6
+15: !ruby/object:Quadrupla
+  operador: "*"
+  arg1: tmp5
+  arg2: tmp6
+  resultado: tmp7
+16: !ruby/object:Quadrupla
+  operador: ":="
+  arg1: tmp7
+  arg2:
+  resultado: tmp8
+17: !ruby/object:Quadrupla
+  operador: "+"
+  arg1: tmp4
+  arg2: tmp8
+  resultado: tmp9
+18: !ruby/object:Quadrupla
+  operador: ":="
+  arg1: tmp9
+  arg2:
+  resultado: R4
+19: !ruby/object:Quadrupla
+  operador: ":="
+  arg1: R4
+  arg2:
+  resultado: R5

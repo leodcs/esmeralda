@@ -20,5 +20,5 @@ shared_context 'Compilacao' do |example_description, file, error_message|
     File.read(caminho_arquivo)
   end
 
-  after(:all) { File.delete(Scanner::ARQUIVO_SAIDA) }
+  after(:all) { File.delete(Scanner::SAIDA) }
 end

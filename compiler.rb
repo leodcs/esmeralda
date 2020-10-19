@@ -1,9 +1,12 @@
 Dir['./lib/config/**/*.rb'].sort.each { |config| require config }
 require 'colorize'
 require 'tty-reader'
+require 'pry'
 require './lib/scanner'
 require './lib/parser'
 require './lib/semantic'
+require './lib/high_code'
+require './lib/quadrupla'
 Dir['./lib/exceptions/*.rb'].each { |exception| require exception }
 
 class Compiler
@@ -11,6 +14,7 @@ class Compiler
     scan(file)
     parse
     analyze_semantic
+    generate_high_code
   end
 
   def scan(file)
@@ -24,11 +28,37 @@ class Compiler
   def analyze_semantic
     Semantic.new($parse).analyze
   end
+
+  def generate_high_code
+    HighCode.new.generate($parse.root)
+  end
+end
+
+def reload!
+  puts 'Reloading...'.colorize(:blue)
+
+  # Main project directory.
+  root_dir = File.expand_path('..', __dir__)
+  # Directories within the project that should be reloaded.
+  reload_dirs = ['lib', 'lib/config', 'lib/nodes']
+  # Loop through and reload every file in all relevant project directories.
+  reload_dirs.each do |dir|
+    Dir["./#{dir}/*.rb"].each { |f| load(f) }
+  end
+
+  puts 'Code reloaded!'.colorize(:green)
+  # Return true when complete.
+  true
 end
 
 # Configura pasta atual para ser a mesma do executável
 Dir.chdir File.dirname(ENV['OCRA_EXECUTABLE']) if ENV['OCRA_EXECUTABLE']
+
 reader = TTY::Reader.new(interrupt: :exit)
+
+reader.on(:keyctrl_r) do
+  reload!
+end
 
 reader.on(:keyescape, :keyctrl_d) do
   puts 'Finalizando...'
@@ -47,9 +77,9 @@ loop do
       if Compiler.new.compile(arquivo)
         puts 'Compilação efetuada com sucesso.'.colorize(:green)
       end
-    rescue StandardError => erro_esperado
-      erro_esperado.set_backtrace([])
-      puts erro_esperado.message.colorize(:red)
+    # rescue StandardError => erro_esperado
+    #   erro_esperado.set_backtrace([])
+    #   puts erro_esperado.message.colorize(:red)
     ensure
       puts
     end
