@@ -5,6 +5,7 @@ Dir['./spec/shared_contexts/*.rb'].each { |context| require context }
 require './lib/scanner'
 require './lib/parser'
 require './lib/semantic'
+require './lib/intermediate_code'
 require 'pry'
 
 RSpec.configure do |config|

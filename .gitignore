@@ -1,5 +1,6 @@
 entradas/
 tabela-lexica.yaml
+intermediario.yaml
 parse.dot
 parse.png
 .editorconfig

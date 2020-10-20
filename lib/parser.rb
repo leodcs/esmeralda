@@ -1,5 +1,5 @@
-require './lib/nodes/node'
-require './lib/nodes/expression'
+require_relative 'nodes/node'
+require_relative 'nodes/expression'
 Dir['./lib/nodes/*.rb'].sort.each { |node| require node }
 
 class Parser

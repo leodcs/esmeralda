@@ -6,11 +6,11 @@ RSpec.describe 'Analisador Léxico' do
   let(:pasta_comentarios) { 'spec/algoritmos/validos/comentarios' }
 
   it 'não dá erro em algoritmo válido' do
-    expect { @scan = Scanner.new(algoritmo_valido).scan }.not_to raise_error
+    expect { compila(algoritmo_valido) }.not_to raise_error
 
     ignorados = [:ESPACO, :ABRE_CHAVE, :FECHA_CHAVE, :FIM]
     expected_types = Token.types.keys.sort - ignorados
-    types = @scan.todos_tokens.map(&:type).uniq.sort - ignorados
+    types = $scan.todos_tokens.map(&:type).uniq.sort - ignorados
 
     expect(types).to match_array(expected_types)
   end
@@ -35,21 +35,21 @@ RSpec.describe 'Analisador Léxico' do
 
   it 'ignora comentários em uma linha' do
     arquivo = le_arquivo(pasta_comentarios, 'umalinha')
-    expect { @scan = Scanner.new(arquivo).scan }.not_to raise_error
-    expect(@scan.todos_tokens.count).to eq(10)
+    expect { compila(arquivo) }.not_to raise_error
+    expect($scan.todos_tokens.count).to eq(10)
   end
 
   it 'ignora comentários em múltiplas linhas' do
     arquivo = le_arquivo(pasta_comentarios, 'multiplaslinhas')
-    expect { @scan = Scanner.new(arquivo).scan }.not_to raise_error
-    expect(@scan.todos_tokens.count).to eq(70)
+    expect { compila(arquivo) }.not_to raise_error
+    expect($scan.todos_tokens.count).to eq(70)
   end
 
   it 'ignora comentários com multiplos "{"' do
     arquivo = le_arquivo(pasta_comentarios, 'muitaschaves')
 
-    expect { @scan = Scanner.new(arquivo).scan }.not_to raise_error
-    expect(@scan.todos_tokens.count).to eq(43)
+    expect { compila(arquivo) }.not_to raise_error
+    expect($scan.todos_tokens.count).to eq(43)
   end
 
   it 'lê tokens na mesma linha após fechar comentário' do

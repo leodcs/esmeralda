@@ -1,7 +1,11 @@
 PROGRAM programa;
-   REAL x;
+REAL x;
+INTEGER i1, i2;
+REAL r1, r4;
 BEGIN
-  BEGIN
-     x := 1 + x;
-  END;
+BEGIN
+   x := 1 + x;
+   R4 := (i1 / 10) * (r1 + i2);
+   R4 := (r4) + ((i1 / 15.2) * (r1 + i2));
+END;
 END.

@@ -1,12 +1,10 @@
 Dir['./lib/config/**/*.rb'].sort.each { |config| require config }
 require 'colorize'
 require 'tty-reader'
-require 'pry'
 require './lib/scanner'
 require './lib/parser'
 require './lib/semantic'
-require './lib/high_code'
-require './lib/quadrupla'
+require './lib/intermediate_code'
 Dir['./lib/exceptions/*.rb'].each { |exception| require exception }
 
 class Compiler
@@ -14,7 +12,7 @@ class Compiler
     scan(file)
     parse
     analyze_semantic
-    generate_high_code
+    generate_intermediate_code
   end
 
   def scan(file)
@@ -29,14 +27,20 @@ class Compiler
     Semantic.new($parse).analyze
   end
 
-  def generate_high_code
-    HighCode.new.generate($parse.root)
+  def generate_intermediate_code
+    IntermediateCode.new.generate($parse.root)
   end
 end
 
-def reload!
-  puts 'Reloading...'.colorize(:blue)
+# Configura pasta atual para ser a mesma do executável
+Dir.chdir File.dirname(ENV['OCRA_EXECUTABLE']) if ENV['OCRA_EXECUTABLE']
 
+reader = TTY::Reader.new(interrupt: :exit)
+
+#-------------------- Para facilitar o desenvolvimento
+require 'pry'
+reader.on(:keyctrl_r) do
+  puts 'Reloading...'.colorize(:blue)
   # Main project directory.
   root_dir = File.expand_path('..', __dir__)
   # Directories within the project that should be reloaded.
@@ -50,15 +54,7 @@ def reload!
   # Return true when complete.
   true
 end
-
-# Configura pasta atual para ser a mesma do executável
-Dir.chdir File.dirname(ENV['OCRA_EXECUTABLE']) if ENV['OCRA_EXECUTABLE']
-
-reader = TTY::Reader.new(interrupt: :exit)
-
-reader.on(:keyctrl_r) do
-  reload!
-end
+#--------------------
 
 reader.on(:keyescape, :keyctrl_d) do
   puts 'Finalizando...'
@@ -77,9 +73,9 @@ loop do
       if Compiler.new.compile(arquivo)
         puts 'Compilação efetuada com sucesso.'.colorize(:green)
       end
-    # rescue StandardError => erro_esperado
-    #   erro_esperado.set_backtrace([])
-    #   puts erro_esperado.message.colorize(:red)
+    rescue StandardError => erro_esperado
+      erro_esperado.set_backtrace([])
+      puts erro_esperado.message.colorize(:red)
     ensure
       puts
     end
