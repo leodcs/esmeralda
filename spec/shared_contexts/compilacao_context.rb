@@ -5,7 +5,7 @@ shared_context 'Compilacao' do |example_description, file, error_message|
     $scan = Scanner.new(arquivo).scan
     $parse = Parser.new.parse
     $semantic = Semantic.new($parse).analyze
-    $intermediate = IntermediateCode.new.generate($parse.root)
+    $intermediario = GeradorIntermediario.new.generate($parse.root)
   end
 
   def espera_excecao(nome_arquivo, &block)

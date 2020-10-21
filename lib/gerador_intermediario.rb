@@ -1,8 +1,8 @@
 require_relative 'quadrupla'
 
-class IntermediateCode
+class GeradorIntermediario
   SAIDA = './intermediario.yaml'
-  PREFIXO_VARIAVEL = 'tmp' # nome usado p/ gerar as variaveis temporarias
+  PREFIXO_VARIAVEL = 'temp' # nome usado p/ gerar as variaveis temporarias
 
   def initialize
     @variaveis = {} # Lista de variaveis temporarias
@@ -27,7 +27,13 @@ class IntermediateCode
       quadrupla = salva_quadrupla *gera_expression(node)
       quadrupla.resultado
     when 'Conditional'
+      # TODO
+    when 'WhileIteration'
+      # TODO
+    when 'RepeatIteration'
+      # TODO
     when 'Call'
+      # TODO
     when 'Declaration' # Ignora declaracoes
     end
   end
@@ -65,10 +71,11 @@ class IntermediateCode
 
   def gera_expression(node)
     operador = node.operator.match
-    tmp1, tmp2 = node.nodes.map { |child| push_expression_node(child) }
+    quadruplas_internas = node.nodes.map { |child| push_expression_node(child) }
+    temp1, temp2 = quadruplas_internas.map(&:resultado)
     resultado = proxima_variavel
 
-    return [operador, tmp1, tmp2, resultado]
+    return [operador, temp1, temp2, resultado]
   end
 
   def salva_quadrupla(operador, arg1, arg2, resultado)
@@ -79,7 +86,7 @@ class IntermediateCode
   end
 
   def proxima_variavel
-    numero_proxima = (@variaveis.keys.last || 1) + 1
+    numero_proxima = @variaveis.keys.last.to_i + 1
     temporaria = "#{PREFIXO_VARIAVEL}#{numero_proxima}"
 
     # Se tiver alguma variavel com o nome da próx. temporaria, tenta gerar outra

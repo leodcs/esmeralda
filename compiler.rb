@@ -4,7 +4,7 @@ require 'tty-reader'
 require './lib/scanner'
 require './lib/parser'
 require './lib/semantic'
-require './lib/intermediate_code'
+require './lib/gerador_intermediario'
 Dir['./lib/exceptions/*.rb'].each { |exception| require exception }
 
 class Compiler
@@ -28,7 +28,7 @@ class Compiler
   end
 
   def generate_intermediate_code
-    IntermediateCode.new.generate($parse.root)
+    GeradorIntermediario.new.generate($parse.root)
   end
 end
 

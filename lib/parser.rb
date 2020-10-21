@@ -253,7 +253,7 @@ class Parser
     consome(:DO)
     nodes = comando
 
-    return ::Nodes::Iteration.new(expression, nodes)
+    return ::Nodes::WhileIteration.new(expression, nodes)
   end
 
   def itera_repeat
@@ -268,7 +268,7 @@ class Parser
     consome(:FECHA_PAREN)
     consome(:PONTO_VIRGULA)
 
-    return ::Nodes::Iteration.new(expression, nodes)
+    return ::Nodes::RepeatIteration.new(expression, nodes)
   end
 
   def declaracoes
