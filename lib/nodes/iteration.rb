@@ -1,9 +1,9 @@
 module Nodes
   class Iteration < Node
-    attr_reader :expression
+    attr_reader :clause
 
-    def initialize(expression, nodes = [])
-      @expression = expression
+    def initialize(clause, nodes = [])
+      @clause = clause
 
       super(nodes)
     end

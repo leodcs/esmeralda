@@ -1,8 +1,9 @@
 module Nodes
   class Conditional < Node
-    attr_reader :then_body, :else_body
+    attr_reader :clause, :then_body, :else_body
 
-    def initialize(then_body, else_body, nodes = [])
+    def initialize(clause, then_body, else_body, nodes = [])
+      @clause = clause
       @then_body = then_body
       @else_body = else_body
 

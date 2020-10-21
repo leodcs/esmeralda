@@ -47,7 +47,7 @@ class Parser
   end
 
   def bloco
-    return unless proximo?(:BEGIN)
+    return nil unless proximo?(:BEGIN)
 
     consome(:BEGIN)
     nodes = comandos
@@ -66,22 +66,21 @@ class Parser
   end
 
   def condicional
-    return unless proximo?(:IF)
+    return nil unless proximo?(:IF)
 
     nodes = []
     consome(:IF)
     consome(:ABRE_PAREN)
 
     verifica_proximos(esperando: :expr_relacional)
-    then_body = expr_relacional
-    nodes << then_body
+    clause = expr_relacional
 
     verifica_proximos(esperando: :fim_expr_relacional)
     consome(:FECHA_PAREN)
     consome(:THEN)
 
     verifica_proximos(esperando: :comando)
-    nodes << comando
+    nodes << then_body = comando
 
     else_body = nil
     if proximo?(:ELSE)
@@ -90,7 +89,7 @@ class Parser
       nodes << else_body = comando
     end
 
-    return ::Nodes::Conditional.new(then_body, else_body, nodes)
+    return ::Nodes::Conditional.new(clause, then_body, else_body, nodes)
   end
 
   def expr_relacional
@@ -98,7 +97,7 @@ class Parser
   end
 
   def multi_op_relacional
-    return unless proximo?(:ABRE_PAREN)
+    return nil unless proximo?(:ABRE_PAREN)
 
     expressions = []
     consome(:ABRE_PAREN)
@@ -116,7 +115,7 @@ class Parser
   end
 
   def op_relacional
-    return unless proximo?(:ID) || proximo?(:INTEGER) || proximo?(:REAL)
+    return nil unless proximo?(:ID) || proximo?(:INTEGER) || proximo?(:REAL)
 
     nodes = []
     verifica_proximos(esperando: :val)
@@ -133,7 +132,7 @@ class Parser
   end
 
   def id
-    return unless proximo?(:ID)
+    return nil unless proximo?(:ID)
 
     name = consome(:ID)
     @identifiers << (node = ::Nodes::Identifier.new(name))
@@ -142,14 +141,14 @@ class Parser
   end
 
   def integer
-    return unless proximo?(:INTEGER)
+    return nil unless proximo?(:INTEGER)
 
     value = consome(:INTEGER)
     return ::Nodes::Integer.new(value)
   end
 
   def real
-    return unless proximo?(:REAL)
+    return nil unless proximo?(:REAL)
 
     value = consome(:REAL)
     return ::Nodes::Real.new(value)
@@ -169,7 +168,7 @@ class Parser
   end
 
   def comando_all
-    return unless proximo?(:ALL)
+    return nil unless proximo?(:ALL)
 
     params = []
     method_name = consome(:ALL)
@@ -190,7 +189,7 @@ class Parser
   end
 
   def atribuicao
-    return unless proximo?(:ID)
+    return nil unless proximo?(:ID)
 
     name = consome(:ID)
     consome(:ATRIB)
@@ -207,7 +206,7 @@ class Parser
   end
 
   def op_arit
-    return unless proximo?(:ID, :OP_ARITMETICO) || proximo?(:INTEGER, :OP_ARITMETICO) || proximo?(:REAL, :OP_ARITMETICO)
+    return nil unless proximo?(:ID, :OP_ARITMETICO) || proximo?(:INTEGER, :OP_ARITMETICO) || proximo?(:REAL, :OP_ARITMETICO)
 
     nodes = []
     verifica_proximos(esperando: :val)
@@ -220,7 +219,7 @@ class Parser
   end
 
   def multi_arit
-    return unless proximo?(:ABRE_PAREN)
+    return nil unless proximo?(:ABRE_PAREN)
 
     nodes = []
     consome(:ABRE_PAREN)
@@ -243,32 +242,32 @@ class Parser
   end
 
   def itera_while
-    return unless proximo?(:WHILE)
+    return nil unless proximo?(:WHILE)
 
     consome(:WHILE)
     consome(:ABRE_PAREN)
     verifica_proximos(esperando: :expr_relacional)
-    expression = expr_relacional
+    clause = expr_relacional
     consome(:FECHA_PAREN)
     consome(:DO)
     nodes = comando
 
-    return ::Nodes::WhileIteration.new(expression, nodes)
+    return ::Nodes::WhileIteration.new(clause, nodes)
   end
 
   def itera_repeat
-    return unless proximo?(:REPEAT)
+    return nil unless proximo?(:REPEAT)
 
     consome(:REPEAT)
     nodes = comando
     consome(:UNTIL)
     consome(:ABRE_PAREN)
     verifica_proximos(esperando: :expr_relacional)
-    expression = expr_relacional
+    clause = expr_relacional
     consome(:FECHA_PAREN)
     consome(:PONTO_VIRGULA)
 
-    return ::Nodes::RepeatIteration.new(expression, nodes)
+    return ::Nodes::RepeatIteration.new(clause, nodes)
   end
 
   def declaracoes
@@ -276,7 +275,7 @@ class Parser
   end
 
   def declaracao
-    return unless proximo?(:TIPO_VAR)
+    return nil unless proximo?(:TIPO_VAR)
 
     names = []
     type = consome(:TIPO_VAR)

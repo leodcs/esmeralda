@@ -1,11 +1,4 @@
 module Nodes
-  class MultiExpression < Node
-    attr_reader :operator
-
-    def initialize(operator, nodes = [])
-      @operator = operator
-
-      super(nodes)
-    end
+  class MultiExpression < Expression
   end
 end
