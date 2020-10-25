@@ -7,12 +7,22 @@ class ArquivoSaida
     @saida = YAML::Store.new(@caminho) # Usa a biblioteca YAML
   end
 
-  # Escreve um valor no arquivo de saida
-  def push(valor)
+  def last
     transaction do
-      proximo_id = @saida.roots.last.to_i + 1
+      table = @saida.instance_variable_get('@table').map do |id, object|
+        Struct.new(:id, :object).new(id, object)
+      end
 
-      @saida[proximo_id] = valor
+      return table.last
+    end
+  end
+
+  # Escreve um valor no arquivo de saida
+  def push(valor, id = nil)
+    transaction do
+      id ||= @saida.roots.last.to_i + 1
+
+      @saida[id] = valor
     end
   end
 
@@ -31,6 +41,10 @@ class ArquivoSaida
 
       return ids.map { |id| @saida[id] }
     end
+  end
+
+  def update(id, value)
+    push(value, id)
   end
 
   private

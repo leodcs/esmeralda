@@ -16,5 +16,9 @@ module Nodes
 
       return children.flatten
     end
+
+    def class_type
+      self.class.name.split('::').last.underscore.to_sym
+    end
   end
 end

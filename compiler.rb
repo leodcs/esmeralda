@@ -28,7 +28,18 @@ class Compiler
   end
 
   def generate_intermediate_code
-    GeradorIntermediario.new.generate($parse.root)
+    quadruplas = GeradorIntermediario.call($parse)
+
+    require 'terminal-table'
+    header = ['', 'operador', 'arg1', 'arg2', 'resultado']
+    table = Terminal::Table.new(title: 'Código Intermediário', headings: header, style: { width: 80 }) do |t|
+      quadruplas.each do |q|
+        t << :separator
+        t << [q.linha, q.operador, q.arg1, q.arg2, q.resultado]
+      end
+    end
+
+    puts table
   end
 end
 
@@ -73,9 +84,9 @@ loop do
       if Compiler.new.compile(arquivo)
         puts 'Compilação efetuada com sucesso.'.colorize(:green)
       end
-    rescue StandardError => erro_esperado
-      erro_esperado.set_backtrace([])
-      puts erro_esperado.message.colorize(:red)
+    # rescue StandardError => erro_esperado
+    #   erro_esperado.set_backtrace([])
+    #   puts erro_esperado.message.colorize(:red)
     ensure
       puts
     end

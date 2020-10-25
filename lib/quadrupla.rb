@@ -1,7 +1,8 @@
 class Quadrupla
-  attr_reader :operador, :arg1, :arg2, :resultado
+  attr_accessor :linha, :operador, :arg1, :arg2, :resultado
 
-  def initialize(operador, arg1, arg2, resultado)
+  def initialize(linha, operador, arg1, arg2, resultado)
+    @linha = linha
     @operador = operador
     @arg1 = arg1
     @arg2 = arg2
