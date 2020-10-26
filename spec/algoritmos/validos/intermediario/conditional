@@ -1,0 +1,17 @@
+PROGRAM programa;
+REAL x, y;
+BEGIN
+BEGIN
+if ((y > x) OR (y = 12)) then
+begin
+x := x/10;
+y := (8 + 90) * (x);
+y := x - 2;
+end;
+else
+begin
+x := x/5;
+y := x - 90;
+end;
+END;
+END.

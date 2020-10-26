@@ -1,9 +1,10 @@
 require 'yaml/store'
 
 class ArquivoSaida
-  def initialize(caminho)
+  def initialize(caminho, sobrescreve = true)
     @caminho = caminho
-    File.open(@caminho, 'w') # inicializa o arquivo em branco, ou o sobrescreve
+    # inicializa o arquivo em branco, ou o sobrescreve
+    File.open(@caminho, 'w') if sobrescreve
     @saida = YAML::Store.new(@caminho) # Usa a biblioteca YAML
   end
 

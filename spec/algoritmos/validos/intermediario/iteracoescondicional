@@ -1,0 +1,39 @@
+{ -*- MODE: PASCAL -*- }
+
+PROGRAM PROGRAMA;
+REAL x,y;
+BEGIN
+BEGIN
+   x := 3/2;
+   y := 120938.123;
+   y := y + 1;
+   x := (y * 3) + (70 - x);
+
+   if ((y > x) OR (y = 12)) then
+      begin
+        x := x/10;
+        y := (8 + 90) * (x);
+        y := x - 2;
+      end;
+    else
+      begin
+        x := x/5;
+        y := x - 90;
+      end;
+
+   repeat
+      begin
+         x := x - 1;
+         y := (8 + 90) * (x);
+         x := x * y;
+      end;
+   until ((x <= y) OR (x = 7));
+
+   while ((x > y) AND ((x > 2) OR (x < 2390))) do
+       begin
+         x := x/10;
+         y := (90.8/100) * (x);
+         x := x/y;
+      end;
+END;
+END.

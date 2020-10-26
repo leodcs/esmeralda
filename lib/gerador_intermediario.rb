@@ -4,18 +4,20 @@ class GeradorIntermediario
   SAIDA = './intermediario.yaml'
   PREFIXO_VARIAVEL = '#temp' # nome usado p/ gerar as variaveis temporarias
 
-  attr_reader :quadruplas
-
   def self.call(parse)
     object = new
     object.generate(parse.root)
 
-    return object.quadruplas.read(0..)
+    return object
   end
 
   def initialize
     @variaveis = {} # Lista de variaveis temporarias
     @quadruplas = ArquivoSaida.new(SAIDA)
+  end
+
+  def quadruplas
+    @quadruplas.read(0..)
   end
 
   def generate(node)

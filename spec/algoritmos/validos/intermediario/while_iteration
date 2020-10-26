@@ -1,0 +1,12 @@
+PROGRAM programa;
+REAL x, y;
+BEGIN
+BEGIN
+  x := 8;
+  y := 90;
+
+  while ((x > y) AND ((x > 2) OR (x < 2390))) do
+  begin
+  end;
+END;
+END.

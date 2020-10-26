@@ -1,0 +1,7 @@
+PROGRAM programa;
+REAL x;
+BEGIN
+BEGIN
+   x := (2 + 8) * (9/70);
+END;
+END.

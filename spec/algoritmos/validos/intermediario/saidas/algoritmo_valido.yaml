@@ -1,0 +1,409 @@
+---
+1: !ruby/object:Quadrupla
+  linha: 1
+  operador: ":="
+  arg1: 10
+  arg2:
+  resultado: I4
+2: !ruby/object:Quadrupla
+  linha: 2
+  operador: ":="
+  arg1: 20
+  arg2:
+  resultado: I4
+3: !ruby/object:Quadrupla
+  linha: 3
+  operador: ":="
+  arg1: 30
+  arg2:
+  resultado: I2
+4: !ruby/object:Quadrupla
+  linha: 4
+  operador: ":="
+  arg1: !ruby/object:BigDecimal 18:0.15e1
+  arg2:
+  resultado: R1
+5: !ruby/object:Quadrupla
+  linha: 5
+  operador: ":="
+  arg1: I4
+  arg2:
+  resultado: I5
+6: !ruby/object:Quadrupla
+  linha: 6
+  operador: ":="
+  arg1: R1
+  arg2:
+  resultado: R2
+7: !ruby/object:Quadrupla
+  linha: 7
+  operador: "+"
+  arg1: I1
+  arg2: R1
+  resultado: R3
+8: !ruby/object:Quadrupla
+  linha: 8
+  operador: "/"
+  arg1: I1
+  arg2: 10
+  resultado: "#temp1"
+9: !ruby/object:Quadrupla
+  linha: 9
+  operador: "+"
+  arg1: R1
+  arg2: I2
+  resultado: "#temp2"
+10: !ruby/object:Quadrupla
+  linha: 10
+  operador: "*"
+  arg1: "#temp1"
+  arg2: "#temp2"
+  resultado: "#temp3"
+11: !ruby/object:Quadrupla
+  linha: 11
+  operador: ":="
+  arg1: "#temp3"
+  arg2:
+  resultado: R4
+12: !ruby/object:Quadrupla
+  linha: 12
+  operador: ":="
+  arg1: R4
+  arg2:
+  resultado: "#temp4"
+13: !ruby/object:Quadrupla
+  linha: 13
+  operador: "/"
+  arg1: I1
+  arg2: !ruby/object:BigDecimal 18:0.152e2
+  resultado: "#temp5"
+14: !ruby/object:Quadrupla
+  linha: 14
+  operador: "+"
+  arg1: R1
+  arg2: I2
+  resultado: "#temp6"
+15: !ruby/object:Quadrupla
+  linha: 15
+  operador: "*"
+  arg1: "#temp5"
+  arg2: "#temp6"
+  resultado: "#temp7"
+16: !ruby/object:Quadrupla
+  linha: 16
+  operador: ":="
+  arg1: "#temp7"
+  arg2:
+  resultado: "#temp8"
+17: !ruby/object:Quadrupla
+  linha: 17
+  operador: "+"
+  arg1: "#temp4"
+  arg2: "#temp8"
+  resultado: "#temp9"
+18: !ruby/object:Quadrupla
+  linha: 18
+  operador: ":="
+  arg1: "#temp9"
+  arg2:
+  resultado: R4
+19: !ruby/object:Quadrupla
+  linha: 19
+  operador: ":="
+  arg1: R4
+  arg2:
+  resultado: R5
+20: !ruby/object:Quadrupla
+  linha: 20
+  operador: ":="
+  arg1: 5
+  arg2:
+  resultado: "#temp10"
+21: !ruby/object:Quadrupla
+  linha: 21
+  operador: ":="
+  arg1: R2
+  arg2:
+  resultado: "#temp11"
+22: !ruby/object:Quadrupla
+  linha: 22
+  operador: ">"
+  arg1: "#temp10"
+  arg2: "#temp11"
+  resultado: "#temp12"
+23: !ruby/object:Quadrupla
+  linha: 23
+  operador: NOT
+  arg1: "#temp12"
+  arg2:
+  resultado: "#temp12"
+24: !ruby/object:Quadrupla
+  linha: 24
+  operador: IF
+  arg1: "#temp12"
+  arg2:
+  resultado:
+25: !ruby/object:Quadrupla
+  linha: 25
+  operador: GOTO
+  arg1: 26
+  arg2:
+  resultado:
+26: !ruby/object:Quadrupla
+  linha: 26
+  operador: ":="
+  arg1: R2
+  arg2:
+  resultado: "#temp13"
+27: !ruby/object:Quadrupla
+  linha: 27
+  operador: ":="
+  arg1: 100
+  arg2:
+  resultado: "#temp14"
+28: !ruby/object:Quadrupla
+  linha: 28
+  operador: "<"
+  arg1: "#temp13"
+  arg2: "#temp14"
+  resultado: "#temp15"
+29: !ruby/object:Quadrupla
+  linha: 29
+  operador: NOT
+  arg1: "#temp15"
+  arg2:
+  resultado: "#temp15"
+30: !ruby/object:Quadrupla
+  linha: 30
+  operador: IF
+  arg1: "#temp15"
+  arg2:
+  resultado:
+31: !ruby/object:Quadrupla
+  linha: 31
+  operador: GOTO
+  arg1: 34
+  arg2:
+  resultado:
+32: !ruby/object:Quadrupla
+  linha: 32
+  operador: "+"
+  arg1: R2
+  arg2: 1
+  resultado: R2
+33: !ruby/object:Quadrupla
+  linha: 33
+  operador: GOTO
+  arg1: 26
+  arg2:
+  resultado:
+34: !ruby/object:Quadrupla
+  linha: 34
+  operador: ":="
+  arg1: R1
+  arg2:
+  resultado: "#temp16"
+35: !ruby/object:Quadrupla
+  linha: 35
+  operador: ":="
+  arg1: 20
+  arg2:
+  resultado: "#temp17"
+36: !ruby/object:Quadrupla
+  linha: 36
+  operador: "="
+  arg1: "#temp16"
+  arg2: "#temp17"
+  resultado: "#temp18"
+37: !ruby/object:Quadrupla
+  linha: 37
+  operador: ":="
+  arg1: "#temp18"
+  arg2:
+  resultado: "#temp19"
+38: !ruby/object:Quadrupla
+  linha: 38
+  operador: ":="
+  arg1: R3
+  arg2:
+  resultado: "#temp20"
+39: !ruby/object:Quadrupla
+  linha: 39
+  operador: ":="
+  arg1: 30
+  arg2:
+  resultado: "#temp21"
+40: !ruby/object:Quadrupla
+  linha: 40
+  operador: "<"
+  arg1: "#temp20"
+  arg2: "#temp21"
+  resultado: "#temp22"
+41: !ruby/object:Quadrupla
+  linha: 41
+  operador: ":="
+  arg1: "#temp22"
+  arg2:
+  resultado: "#temp23"
+42: !ruby/object:Quadrupla
+  linha: 42
+  operador: OR
+  arg1: "#temp19"
+  arg2: "#temp23"
+  resultado: "#temp24"
+43: !ruby/object:Quadrupla
+  linha: 43
+  operador: IF
+  arg1: "#temp24"
+  arg2:
+  resultado:
+44: !ruby/object:Quadrupla
+  linha: 44
+  operador: GOTO
+  arg1: 48
+  arg2:
+  resultado:
+45: !ruby/object:Quadrupla
+  linha: 45
+  operador: "+"
+  arg1: R2
+  arg2: 2
+  resultado: R2
+46: !ruby/object:Quadrupla
+  linha: 46
+  operador: "+"
+  arg1: R3
+  arg2: 3
+  resultado: R3
+47: !ruby/object:Quadrupla
+  linha: 47
+  operador: GOTO
+  arg1: 34
+  arg2:
+  resultado:
+48: !ruby/object:Quadrupla
+  linha: 48
+  operador: ":="
+  arg1: R1
+  arg2:
+  resultado: "#temp25"
+49: !ruby/object:Quadrupla
+  linha: 49
+  operador: ":="
+  arg1: 20
+  arg2:
+  resultado: "#temp26"
+50: !ruby/object:Quadrupla
+  linha: 50
+  operador: "<>"
+  arg1: "#temp25"
+  arg2: "#temp26"
+  resultado: "#temp27"
+51: !ruby/object:Quadrupla
+  linha: 51
+  operador: ":="
+  arg1: "#temp27"
+  arg2:
+  resultado: "#temp28"
+52: !ruby/object:Quadrupla
+  linha: 52
+  operador: ":="
+  arg1: I1
+  arg2:
+  resultado: "#temp29"
+53: !ruby/object:Quadrupla
+  linha: 53
+  operador: ":="
+  arg1: 30
+  arg2:
+  resultado: "#temp30"
+54: !ruby/object:Quadrupla
+  linha: 54
+  operador: "<="
+  arg1: "#temp29"
+  arg2: "#temp30"
+  resultado: "#temp31"
+55: !ruby/object:Quadrupla
+  linha: 55
+  operador: ":="
+  arg1: "#temp31"
+  arg2:
+  resultado: "#temp32"
+56: !ruby/object:Quadrupla
+  linha: 56
+  operador: ":="
+  arg1: R3
+  arg2:
+  resultado: "#temp33"
+57: !ruby/object:Quadrupla
+  linha: 57
+  operador: ":="
+  arg1: !ruby/object:BigDecimal 18:0.305e2
+  arg2:
+  resultado: "#temp34"
+58: !ruby/object:Quadrupla
+  linha: 58
+  operador: ">"
+  arg1: "#temp33"
+  arg2: "#temp34"
+  resultado: "#temp35"
+59: !ruby/object:Quadrupla
+  linha: 59
+  operador: ":="
+  arg1: "#temp35"
+  arg2:
+  resultado: "#temp36"
+60: !ruby/object:Quadrupla
+  linha: 60
+  operador: ":="
+  arg1: I1
+  arg2:
+  resultado: "#temp37"
+61: !ruby/object:Quadrupla
+  linha: 61
+  operador: ":="
+  arg1: 0
+  arg2:
+  resultado: "#temp38"
+62: !ruby/object:Quadrupla
+  linha: 62
+  operador: ">="
+  arg1: "#temp37"
+  arg2: "#temp38"
+  resultado: "#temp39"
+63: !ruby/object:Quadrupla
+  linha: 63
+  operador: ":="
+  arg1: "#temp39"
+  arg2:
+  resultado: "#temp40"
+64: !ruby/object:Quadrupla
+  linha: 64
+  operador: OR
+  arg1: "#temp28"
+  arg2: "#temp32"
+  resultado: "#temp41"
+65: !ruby/object:Quadrupla
+  linha: 65
+  operador: NOT
+  arg1: "#temp41"
+  arg2:
+  resultado: "#temp41"
+66: !ruby/object:Quadrupla
+  linha: 66
+  operador: IF
+  arg1: "#temp41"
+  arg2:
+  resultado:
+67: !ruby/object:Quadrupla
+  linha: 67
+  operador: GOTO
+  arg1: 69
+  arg2:
+  resultado:
+68: !ruby/object:Quadrupla
+  linha: 68
+  operador: "+"
+  arg1: R3
+  arg2: 1
+  resultado: R2

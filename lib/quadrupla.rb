@@ -8,4 +8,8 @@ class Quadrupla
     @arg2 = arg2
     @resultado = resultado
   end
+
+  def values
+    [operador, arg1, arg2, resultado]
+  end
 end

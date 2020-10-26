@@ -1,0 +1,121 @@
+---
+1: !ruby/object:Quadrupla
+  linha: 1
+  operador: ":="
+  arg1: 32
+  arg2:
+  resultado: X
+2: !ruby/object:Quadrupla
+  linha: 2
+  operador: ":="
+  arg1: 64
+  arg2:
+  resultado: Y
+3: !ruby/object:Quadrupla
+  linha: 3
+  operador: ":="
+  arg1: X
+  arg2:
+  resultado: "#temp1"
+4: !ruby/object:Quadrupla
+  linha: 4
+  operador: ":="
+  arg1: Y
+  arg2:
+  resultado: "#temp2"
+5: !ruby/object:Quadrupla
+  linha: 5
+  operador: "<="
+  arg1: "#temp1"
+  arg2: "#temp2"
+  resultado: "#temp3"
+6: !ruby/object:Quadrupla
+  linha: 6
+  operador: ":="
+  arg1: "#temp3"
+  arg2:
+  resultado: "#temp4"
+7: !ruby/object:Quadrupla
+  linha: 7
+  operador: ":="
+  arg1: X
+  arg2:
+  resultado: "#temp5"
+8: !ruby/object:Quadrupla
+  linha: 8
+  operador: ":="
+  arg1: 7
+  arg2:
+  resultado: "#temp6"
+9: !ruby/object:Quadrupla
+  linha: 9
+  operador: "="
+  arg1: "#temp5"
+  arg2: "#temp6"
+  resultado: "#temp7"
+10: !ruby/object:Quadrupla
+  linha: 10
+  operador: ":="
+  arg1: "#temp7"
+  arg2:
+  resultado: "#temp8"
+11: !ruby/object:Quadrupla
+  linha: 11
+  operador: OR
+  arg1: "#temp4"
+  arg2: "#temp8"
+  resultado: "#temp9"
+12: !ruby/object:Quadrupla
+  linha: 12
+  operador: IF
+  arg1: "#temp9"
+  arg2:
+  resultado:
+13: !ruby/object:Quadrupla
+  linha: 13
+  operador: GOTO
+  arg1: 21
+  arg2:
+  resultado:
+14: !ruby/object:Quadrupla
+  linha: 14
+  operador: "-"
+  arg1: X
+  arg2: 1
+  resultado: X
+15: !ruby/object:Quadrupla
+  linha: 15
+  operador: "+"
+  arg1: 8
+  arg2: 90
+  resultado: "#temp10"
+16: !ruby/object:Quadrupla
+  linha: 16
+  operador: ":="
+  arg1: X
+  arg2:
+  resultado: "#temp11"
+17: !ruby/object:Quadrupla
+  linha: 17
+  operador: "*"
+  arg1: "#temp10"
+  arg2: "#temp11"
+  resultado: "#temp12"
+18: !ruby/object:Quadrupla
+  linha: 18
+  operador: ":="
+  arg1: "#temp12"
+  arg2:
+  resultado: Y
+19: !ruby/object:Quadrupla
+  linha: 19
+  operador: "*"
+  arg1: X
+  arg2: Y
+  resultado: X
+20: !ruby/object:Quadrupla
+  linha: 20
+  operador: GOTO
+  arg1: 3
+  arg2:
+  resultado:

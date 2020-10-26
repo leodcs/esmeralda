@@ -5,7 +5,7 @@ shared_context 'Compilacao' do |example_description, file, error_message|
     $scan = Scanner.new(arquivo).scan
     $parse = Parser.new.parse
     $semantic = Semantic.new($parse).analyze
-    $intermediario = GeradorIntermediario.new.generate($parse.root)
+    $intermediario = GeradorIntermediario.call($parse)
   end
 
   def espera_excecao(nome_arquivo, &block)
@@ -22,4 +22,5 @@ shared_context 'Compilacao' do |example_description, file, error_message|
   end
 
   after(:all) { File.delete(Scanner::SAIDA) }
+  after(:all) { File.delete(GeradorIntermediario::SAIDA) }
 end

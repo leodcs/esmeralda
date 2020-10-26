@@ -28,7 +28,7 @@ class Compiler
   end
 
   def generate_intermediate_code
-    quadruplas = GeradorIntermediario.call($parse)
+    quadruplas = GeradorIntermediario.call($parse).quadruplas
 
     require 'terminal-table'
     header = ['', 'operador', 'arg1', 'arg2', 'resultado']

@@ -1,0 +1,7 @@
+PROGRAM programa;
+REAL x, y;
+BEGIN
+BEGIN
+   x := 15.2;
+END;
+END.
