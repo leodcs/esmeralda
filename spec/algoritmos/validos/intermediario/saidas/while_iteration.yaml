@@ -125,3 +125,9 @@
   arg1: 3
   arg2:
   resultado:
+22: !ruby/object:Quadrupla
+  linha: 22
+  operador: "END."
+  arg1:
+  arg2:
+  resultado:

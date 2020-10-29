@@ -407,3 +407,9 @@
   arg1: R3
   arg2: 1
   resultado: R2
+69: !ruby/object:Quadrupla
+  linha: 69
+  operador: "END."
+  arg1:
+  arg2:
+  resultado:

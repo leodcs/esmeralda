@@ -28,7 +28,8 @@ class Compiler
   end
 
   def generate_intermediate_code
-    quadruplas = GeradorIntermediario.call($parse).quadruplas
+    gerador = GeradorIntermediario.new($parse).generate
+    quadruplas = gerador.quadruplas
 
     require 'terminal-table'
     header = ['', 'operador', 'arg1', 'arg2', 'resultado']
@@ -84,9 +85,9 @@ loop do
       if Compiler.new.compile(arquivo)
         puts 'Compilação efetuada com sucesso.'.colorize(:green)
       end
-    # rescue StandardError => erro_esperado
-    #   erro_esperado.set_backtrace([])
-    #   puts erro_esperado.message.colorize(:red)
+    rescue StandardError => erro_esperado
+      erro_esperado.set_backtrace([])
+      puts erro_esperado.message.colorize(:red)
     ensure
       puts
     end

@@ -1,11 +1,13 @@
 shared_context 'Compilacao' do |example_description, file, error_message|
-  let(:algoritmo_valido) { File.read('spec/algoritmos/validos/algoritmo1') }
+  let(:algoritmo_valido) do
+    File.read('spec/algoritmos/validos/algoritmo_valido')
+  end
 
   def compila(arquivo)
     $scan = Scanner.new(arquivo).scan
     $parse = Parser.new.parse
     $semantic = Semantic.new($parse).analyze
-    $intermediario = GeradorIntermediario.call($parse)
+    $intermediario = GeradorIntermediario.new($parse).generate
   end
 
   def espera_excecao(nome_arquivo, &block)
