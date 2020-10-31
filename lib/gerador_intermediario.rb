@@ -5,9 +5,10 @@ class GeradorIntermediario
   PREFIXO_VARIAVEL = '#temp' # nome usado p/ gerar as variaveis temporarias
 
   def initialize(parse)
-    @variaveis = {} # Lista de variaveis temporarias
+    @temporarias = {} # Lista de variaveis temporarias
     @quadruplas = ArquivoSaida.new(SAIDA)
     @parse = parse
+    @abandonadas = []
   end
 
   def quadruplas
@@ -18,7 +19,7 @@ class GeradorIntermediario
     gera_node(@parse.root)
     salva_quadrupla('END.', nil, nil, nil)
 
-    self
+    return self
   end
 
   private
@@ -33,11 +34,8 @@ class GeradorIntermediario
       node.name.match
     when :assignment
       salva_quadrupla *gera_assignment(node)
-    when :operation
+    when :operation, :expression, :multi_expression
       gera_operation(node)
-    when :expression, :multi_expression
-      quadrupla = salva_quadrupla *gera_expression(node)
-      quadrupla.resultado
     when :conditional
       gera_condicao(node)
     when :while_iteration
@@ -45,7 +43,7 @@ class GeradorIntermediario
     when :repeat_iteration
       gera_iteracao_repeat(node)
     when :call
-      # TODO
+      raise RuntimeError, 'TODO CALL'
     end
   end
 
@@ -56,15 +54,10 @@ class GeradorIntermediario
     resultado = node.name.match
     nodes = node.nodes
 
-    if nodes.count == 1
-      generation = gera_node(nodes[0])
-      if generation.class == Quadrupla
-        arg1 = generation.resultado
-      elsif generation.class == Array
-        operador, arg1, arg2 = generation
-      else
-        arg1 = generation
-      end
+    if (generation = gera_node(nodes[0])).is_a?(Array)
+      operador, arg1, arg2 = gera_temps(generation, resultado)
+    else
+      arg1 = generation
     end
 
     return [operador, arg1, arg2, resultado]
@@ -78,18 +71,10 @@ class GeradorIntermediario
     return [operador, arg1, arg2]
   end
 
-  def gera_expression(node)
-    operador = node.operator.match
-    quadruplas_internas = node.nodes.map { |child| push_expression_node(child) }
-    temp1, temp2 = quadruplas_internas.map(&:resultado)
-    resultado = proxima_variavel
-
-    return [operador, temp1, temp2, resultado]
-  end
-
   def gera_condicao(node)
     inicio = (@quadruplas.last&.id || 0) + 1
-    condicao = gera_node(node.clause)
+    condicao = gera_clausula(node.clause)
+
     salva_quadrupla('NOT', condicao, nil, condicao)
     salva_quadrupla('IF', condicao, nil, nil)
     salva_quadrupla('GOTO', nil, nil, nil)
@@ -104,7 +89,7 @@ class GeradorIntermediario
 
   def gera_iteracao_while(node)
     inicio = (@quadruplas.last&.id || 0) + 1
-    condicao = gera_node(node.clause)
+    condicao = gera_clausula(node.clause)
     salva_quadrupla('NOT', condicao, nil, condicao)
     salva_quadrupla('IF', condicao, nil, nil)
     salva_quadrupla('GOTO', nil, nil, nil)
@@ -122,7 +107,7 @@ class GeradorIntermediario
 
     node.nodes.each { |node| gera_node(node) }
 
-    condicao = gera_node(node.clause)
+    condicao = gera_clausula(node.clause)
     salva_quadrupla('NOT', condicao, nil, condicao)
     salva_quadrupla('IF', condicao, nil, nil)
 
@@ -144,8 +129,10 @@ class GeradorIntermediario
     return quadrupla
   end
 
-  def proxima_variavel
-    numero_proxima = @variaveis.keys.last.to_i + 1
+  def temporaria
+    return @abandonadas.shift if @abandonadas.any?
+
+    numero_proxima = @temporarias.keys.last.to_i + 1
     temporaria = "#{PREFIXO_VARIAVEL}#{numero_proxima}"
 
     # Se tiver alguma variavel com o nome da próx. temporaria, tenta gerar outra
@@ -154,27 +141,60 @@ class GeradorIntermediario
       temporaria = "#{PREFIXO_VARIAVEL}#{numero_proxima}"
     end
 
-    @variaveis[numero_proxima] = temporaria
+    @temporarias[numero_proxima] = temporaria
 
     return temporaria
   end
 
-  def push_expression_node(node)
-    arg1 = arg2 = nil
-    generation = gera_node(node)
-
-    case generation
-    when Array
-      operador, arg1, arg2 = generation
-    else
-      operador = ':='
-      arg1 = generation
-    end
-
-    salva_quadrupla(operador, arg1, arg2, proxima_variavel)
-  end
-
   def identifiers
     @parse.assignments.map(&:name).map(&:match).map(&:upcase)
+  end
+
+  def gera_temps(generation, resultado = nil)
+    return generation if generation.none? { |e| e.is_a?(Array) }
+
+    operador, arg1, arg2 = generation
+
+    if arg1.is_a?(Array)
+      interna = gera_temps(arg1, resultado)
+    elsif arg2.is_a?(Array)
+      interna = gera_temps(arg2, resultado)
+    end
+
+    registra_abandonadas do
+      if temporaria?(interna[1]) && interna[1] != resultado
+        var = interna[1]
+      else
+        var = (resultado || temporaria)
+      end
+      salva_quadrupla(*interna, var)
+      generation.map! { |g| g == interna ? var : g }
+    end
+
+    gera_temps(generation)
+  end
+
+  def gera_clausula(clause)
+    condicao = gera_temps(gera_node(clause), temporaria)
+
+    salva_quadrupla(*condicao, condicao[1]).resultado
+  end
+
+
+  def temporaria?(arg)
+    arg.to_s.match?(/^#{PREFIXO_VARIAVEL}/)
+  end
+
+  def registra_abandonadas(&block)
+    antes = @temporarias.values
+
+    yield
+
+    depois = @temporarias.values
+    adicionadas = depois - antes
+    # Marca uma temp adicionada como abandonada se ela não estiver "segurando" um valor
+    @abandonadas += adicionadas.delete_if do |temp|
+      quadruplas.any? { |q| q.resultado == temp }
+    end
   end
 end
