@@ -23,6 +23,46 @@ class GeradorIntermediario
     return self
   end
 
+  def imprime_saida
+    puts '--- Código Intermediário ---'.colorize(:green)
+    quadruplas.each_with_index do |quadrupla, index|
+      linha = quadrupla.linha
+      operador, arg1, arg2, resultado = quadrupla.values
+      op_aritmetico = Token.types[:OP_ARITMETICO].match?(operador)
+      op_relacional = Token.types[:OP_RELACIONAL].match?(operador)
+      op_booleano = Token.types[:OP_BOOLEANO].match?(operador)
+      mostra_num = true
+      quebra_linha = true
+
+      if operador == ':='
+        texto = "#{resultado} #{operador} #{arg1}"
+      elsif op_aritmetico || op_relacional
+        texto = "#{resultado} := #{arg1} #{operador} #{arg2}"
+      elsif op_booleano
+        texto = "#{resultado} := #{arg1} #{operador} #{arg2}"
+      elsif ['GOTO', 'IF'].include?(operador)
+        quebra_linha = (operador != 'IF')
+        anterior = quadruplas[index - 1]
+        mostra_num = (anterior.operador != 'IF')
+        texto = "#{operador} #{arg1} "
+      elsif operador == 'NOT'
+        texto = "#{resultado} := NOT #{arg1}"
+      elsif operador == 'END.'
+        texto = "#{operador}"
+      end
+
+      texto = "#{linha.to_s.rjust(2, '0')}: #{texto}" if mostra_num
+      texto = "#{texto}\n" if quebra_linha
+      texto = texto.colorize(:yellow) if operador == 'GOTO'
+      if quadruplas.any? { |q| q.operador == 'GOTO' && q.arg1 == linha }
+        texto = texto.colorize(:blue)
+      end
+
+      print texto
+    end
+    puts '--- FIM Código Intermediário ---'.colorize(:green)
+  end
+
   private
 
   def gera_node(node)
@@ -80,13 +120,19 @@ class GeradorIntermediario
       salva_quadrupla('NOT', condicao, nil, condicao)
       salva_quadrupla('IF', condicao, nil, nil)
       salva_quadrupla('GOTO', nil, nil, nil)
-      goto = @quadruplas.last
+      goto_else = @quadruplas.last
 
-      gera_node(node.then_body) if node.then_body
+      if node.then_body
+        gera_node(node.then_body)
+        salva_quadrupla('GOTO', nil, nil, nil)
+        goto_fim = @quadruplas.last
+      end
 
-      backpatch(goto)
+      backpatch(goto_else)
 
       gera_node(node.else_body) if node.else_body
+
+      backpatch(goto_fim) if goto_fim
     end
   end
 
@@ -121,11 +167,12 @@ class GeradorIntermediario
     end
   end
 
-  def backpatch(goto)
+  def backpatch(record)
     arg1 = @quadruplas.last.id + 1
-    goto.object.arg1 = arg1
+    goto = record.object
+    goto.arg1 = arg1
 
-    @quadruplas.update(goto.id, goto.object)
+    @quadruplas.update(record.id, goto)
   end
 
   def salva_quadrupla(operador, arg1, arg2 = nil, resultado = nil)
