@@ -5,7 +5,8 @@ class GeradorIntermediario
   PREFIXO_VARIAVEL = '#temp' # nome usado p/ gerar as variaveis temporarias
 
   def initialize(parse)
-    @temporarias = {} # Lista de variaveis temporarias
+    @temporarias = [] # Lista de variaveis temporarias
+    @temp_count = 0 # Contador de variaveis temporarias
     @quadruplas = ArquivoSaida.new(SAIDA)
     @parse = parse
     @abandonadas = []
@@ -37,7 +38,7 @@ class GeradorIntermediario
     when :operation, :expression, :multi_expression
       gera_operation(node)
     when :conditional
-      gera_condicao(node)
+      gera_condicional(node)
     when :while_iteration
       gera_iteracao_while(node)
     when :repeat_iteration
@@ -71,47 +72,53 @@ class GeradorIntermediario
     return [operador, arg1, arg2]
   end
 
-  def gera_condicao(node)
-    inicio = (@quadruplas.last&.id || 0) + 1
-    condicao = gera_clausula(node.clause)
+  def gera_condicional(node)
+    registra_abandonadas do
+      inicio = (@quadruplas.last&.id || 0) + 1
+      condicao = gera_clausula(node.clause)
 
-    salva_quadrupla('NOT', condicao, nil, condicao)
-    salva_quadrupla('IF', condicao, nil, nil)
-    salva_quadrupla('GOTO', nil, nil, nil)
-    goto = @quadruplas.last
+      salva_quadrupla('NOT', condicao, nil, condicao)
+      salva_quadrupla('IF', condicao, nil, nil)
+      salva_quadrupla('GOTO', nil, nil, nil)
+      goto = @quadruplas.last
 
-    gera_node(node.then_body) if node.then_body
+      gera_node(node.then_body) if node.then_body
 
-    backpatch(goto)
+      backpatch(goto)
 
-    gera_node(node.else_body) if node.else_body
+      gera_node(node.else_body) if node.else_body
+    end
   end
 
   def gera_iteracao_while(node)
-    inicio = (@quadruplas.last&.id || 0) + 1
-    condicao = gera_clausula(node.clause)
-    salva_quadrupla('NOT', condicao, nil, condicao)
-    salva_quadrupla('IF', condicao, nil, nil)
-    salva_quadrupla('GOTO', nil, nil, nil)
-    goto_final = @quadruplas.last
+    registra_abandonadas do
+      inicio = (@quadruplas.last&.id || 0) + 1
+      condicao = gera_clausula(node.clause)
+      salva_quadrupla('NOT', condicao, nil, condicao)
+      salva_quadrupla('IF', condicao, nil, nil)
+      salva_quadrupla('GOTO', nil, nil, nil)
+      goto_final = @quadruplas.last
 
-    node.nodes.each { |node| gera_node(node) }
+      node.nodes.each { |node| gera_node(node) }
 
-    salva_quadrupla('GOTO', inicio, nil, nil)
+      salva_quadrupla('GOTO', inicio, nil, nil)
 
-    backpatch(goto_final)
+      backpatch(goto_final)
+    end
   end
 
   def gera_iteracao_repeat(node)
-    inicio = (@quadruplas.last&.id || 0) + 1
+    registra_abandonadas do
+      inicio = (@quadruplas.last&.id || 0) + 1
 
-    node.nodes.each { |node| gera_node(node) }
+      node.nodes.each { |node| gera_node(node) }
 
-    condicao = gera_clausula(node.clause)
-    salva_quadrupla('NOT', condicao, nil, condicao)
-    salva_quadrupla('IF', condicao, nil, nil)
+      condicao = gera_clausula(node.clause)
+      salva_quadrupla('NOT', condicao, nil, condicao)
+      salva_quadrupla('IF', condicao, nil, nil)
 
-    salva_quadrupla('GOTO', inicio, nil, nil)
+      salva_quadrupla('GOTO', inicio, nil, nil)
+    end
   end
 
   def backpatch(goto)
@@ -132,16 +139,16 @@ class GeradorIntermediario
   def temporaria
     return @abandonadas.shift if @abandonadas.any?
 
-    numero_proxima = @temporarias.keys.last.to_i + 1
-    temporaria = "#{PREFIXO_VARIAVEL}#{numero_proxima}"
+    @temp_count += 1
+    temporaria = "#{PREFIXO_VARIAVEL}#{@temp_count}"
 
     # Se tiver alguma variavel com o nome da próx. temporaria, tenta gerar outra
     while identifiers.include?(temporaria.upcase)
-      numero_proxima += 1
-      temporaria = "#{PREFIXO_VARIAVEL}#{numero_proxima}"
+      @temp_count += 1
+      temporaria = "#{PREFIXO_VARIAVEL}#{@temp_count}"
     end
 
-    @temporarias[numero_proxima] = temporaria
+    @temporarias << temporaria
 
     return temporaria
   end
@@ -161,15 +168,13 @@ class GeradorIntermediario
       interna = gera_temps(arg2, resultado)
     end
 
-    registra_abandonadas do
-      if temporaria?(interna[1]) && interna[1] != resultado
-        var = interna[1]
-      else
-        var = (resultado || temporaria)
-      end
-      salva_quadrupla(*interna, var)
-      generation.map! { |g| g == interna ? var : g }
+    if temporaria?(interna[1]) && interna[1] != resultado
+      var = interna[1]
+    else
+      var = (resultado || temporaria)
     end
+    salva_quadrupla(*interna, var)
+    generation.map! { |g| g == interna ? var : g }
 
     gera_temps(generation)
   end
@@ -185,16 +190,11 @@ class GeradorIntermediario
     arg.to_s.match?(/^#{PREFIXO_VARIAVEL}/)
   end
 
+  # Marca as temps adicionadas como abandonadas
   def registra_abandonadas(&block)
-    antes = @temporarias.values
-
     yield
 
-    depois = @temporarias.values
-    adicionadas = depois - antes
-    # Marca uma temp adicionada como abandonada se ela não estiver "segurando" um valor
-    @abandonadas += adicionadas.delete_if do |temp|
-      quadruplas.any? { |q| q.resultado == temp }
-    end
+    @abandonadas += @temporarias
+    @abandonadas = @abandonadas.uniq.sort
   end
 end

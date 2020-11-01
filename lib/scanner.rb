@@ -1,4 +1,3 @@
-require 'bigdecimal'
 require 'strscan'
 require_relative 'posicao'
 require_relative 'token'
@@ -77,7 +76,7 @@ class Scanner
         valor = match.to_i
       when :REAL
         token = 'Numerico'
-        valor = BigDecimal(match)
+        valor = match.to_f
       when :ID, :STRING
         token = 'ID'
         lexema = match
