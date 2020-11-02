@@ -26,39 +26,7 @@ class GeradorIntermediario
   def imprime_saida
     puts '--- Código Intermediário ---'.colorize(:green)
     quadruplas.each_with_index do |quadrupla, index|
-      linha = quadrupla.linha
-      operador, arg1, arg2, resultado = quadrupla.values
-      op_aritmetico = Token.types[:OP_ARITMETICO].match?(operador)
-      op_relacional = Token.types[:OP_RELACIONAL].match?(operador)
-      op_booleano = Token.types[:OP_BOOLEANO].match?(operador)
-      mostra_num = true
-      quebra_linha = true
-
-      if operador == ':='
-        texto = "#{resultado} #{operador} #{arg1}"
-      elsif op_aritmetico || op_relacional
-        texto = "#{resultado} := #{arg1} #{operador} #{arg2}"
-      elsif op_booleano
-        texto = "#{resultado} := #{arg1} #{operador} #{arg2}"
-      elsif ['GOTO', 'IF'].include?(operador)
-        quebra_linha = (operador != 'IF')
-        anterior = quadruplas[index - 1]
-        mostra_num = (anterior.operador != 'IF')
-        texto = "#{operador} #{arg1} "
-      elsif operador == 'NOT'
-        texto = "#{resultado} := NOT #{arg1}"
-      elsif operador == 'END.'
-        texto = "#{operador}"
-      end
-
-      texto = "#{linha.to_s.rjust(2, '0')}: #{texto}" if mostra_num
-      texto = "#{texto}\n" if quebra_linha
-      texto = texto.colorize(:yellow) if operador == 'GOTO'
-      if quadruplas.any? { |q| q.operador == 'GOTO' && q.arg1 == linha }
-        texto = texto.colorize(:blue)
-      end
-
-      print texto
+      formata_saida(quadrupla, index)
     end
     puts '--- FIM Código Intermediário ---'.colorize(:green)
   end
@@ -96,7 +64,7 @@ class GeradorIntermediario
     nodes = node.nodes
 
     if (generation = gera_node(nodes[0])).is_a?(Array)
-      operador, arg1, arg2 = gera_temps(generation, resultado)
+      operador, arg1, arg2 = serializa(generation, resultado)
     else
       arg1 = generation
     end
@@ -204,15 +172,15 @@ class GeradorIntermediario
     @parse.assignments.map(&:name).map(&:match).map(&:upcase)
   end
 
-  def gera_temps(generation, resultado = nil)
+  def serializa(generation, resultado = nil)
     return generation if generation.none? { |e| e.is_a?(Array) }
 
     operador, arg1, arg2 = generation
 
     if arg1.is_a?(Array)
-      interna = gera_temps(arg1, resultado)
+      interna = serializa(arg1, resultado)
     elsif arg2.is_a?(Array)
-      interna = gera_temps(arg2, resultado)
+      interna = serializa(arg2, resultado)
     end
 
     if temporaria?(interna[1]) && interna[1] != resultado
@@ -223,13 +191,13 @@ class GeradorIntermediario
     salva_quadrupla(*interna, var)
     generation.map! { |g| g == interna ? var : g }
 
-    gera_temps(generation)
+    serializa(generation)
   end
 
-  def gera_clausula(clause)
-    condicao = gera_temps(gera_node(clause), temporaria)
+  def gera_clausula(node)
+    condicao = serializa(gera_node(node), temporaria)
 
-    salva_quadrupla(*condicao, condicao[1]).resultado
+    salva_quadrupla(*condicao, temporaria).resultado
   end
 
 
@@ -243,5 +211,41 @@ class GeradorIntermediario
 
     @abandonadas += @temporarias
     @abandonadas = @abandonadas.uniq.sort
+  end
+
+  def formata_saida(quadrupla, index)
+    linha = quadrupla.linha
+    operador, arg1, arg2, resultado = quadrupla.values
+    op_aritmetico = Token.types[:OP_ARITMETICO].match?(operador)
+    op_relacional = Token.types[:OP_RELACIONAL].match?(operador)
+    op_booleano = Token.types[:OP_BOOLEANO].match?(operador)
+    mostra_num = true
+    quebra_linha = true
+
+    if operador == ':='
+      texto = "#{resultado} #{operador} #{arg1}"
+    elsif op_aritmetico || op_relacional
+      texto = "#{resultado} := #{arg1} #{operador} #{arg2}"
+    elsif op_booleano
+      texto = "#{resultado} := #{arg1} #{operador} #{arg2}"
+    elsif ['GOTO', 'IF'].include?(operador)
+      quebra_linha = (operador != 'IF')
+      anterior = quadruplas[index - 1]
+      mostra_num = (anterior.operador != 'IF')
+      texto = "#{operador} #{arg1} "
+    elsif operador == 'NOT'
+      texto = "#{resultado} := NOT #{arg1}"
+    elsif operador == 'END.'
+      texto = "#{operador}"
+    end
+
+    if quadruplas.any? { |q| q.operador == 'GOTO' && q.arg1 == linha }
+      texto = texto.colorize(:blue)
+    end
+    texto = "#{texto}\n" if quebra_linha
+    texto = texto.colorize(:yellow) if operador == 'GOTO'
+    texto = "#{linha.to_s.rjust(2, '0')}: #{texto}" if mostra_num
+
+    print texto
   end
 end
