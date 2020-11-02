@@ -42,7 +42,7 @@ class GeradorIntermediario
     when :identifier
       node.name.match
     when :assignment
-      salva_quadrupla *gera_assignment(node)
+      gera_assignment(node)
     when :operation, :expression, :multi_expression
       gera_operation(node)
     when :conditional
@@ -57,19 +57,30 @@ class GeradorIntermediario
   end
 
   def gera_assignment(node)
-    operador = ':='
-    arg1 = nil
-    arg2 = nil
-    resultado = node.name.match
-    nodes = node.nodes
+    registra_abandonadas do
+      operador = ':='
+      arg1 = nil
+      arg2 = nil
+      flag = false
+      var = node.name.match
+      if quadruplas.any? { |q| q.resultado == var && (q.arg1 == var || q.arg2 == var) }
+        resultado = temporaria
+        flag = true
+      else
+        resultado = var
+      end
 
-    if (generation = gera_node(nodes[0])).is_a?(Array)
-      operador, arg1, arg2 = serializa(generation, resultado)
-    else
-      arg1 = generation
+      nodes = node.nodes
+
+      if (generation = gera_node(nodes[0])).is_a?(Array)
+        operador, arg1, arg2 = serializa(generation, resultado)
+      else
+        arg1 = generation
+      end
+
+      resultado = var if flag
+      salva_quadrupla(operador, arg1, arg2, resultado)
     end
-
-    return [operador, arg1, arg2, resultado]
   end
 
   def gera_operation(node)

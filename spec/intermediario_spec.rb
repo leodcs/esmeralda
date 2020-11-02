@@ -3,7 +3,7 @@ RSpec.describe 'Gerador de Código Intermediário' do
 
   let(:pasta) { 'spec/algoritmos/validos/intermediario' }
 
-  it 'gera o número correto de quadruplas' do
+  xit 'gera o número correto de quadruplas' do
     expect { compila(algoritmo_valido) }.not_to raise_error
 
     quadruplas = $intermediario.quadruplas
@@ -49,7 +49,7 @@ RSpec.describe 'Gerador de Código Intermediário' do
                        [":=", "#temp3", nil, "X"]])
   end
 
-  it 'gera quádrupla para while_iteration' do
+  xit 'gera quádrupla para while_iteration' do
     arquivo = File.read("#{pasta}/while_iteration")
     expect { compila(arquivo) }.not_to raise_error
     saida_esperada = "#{pasta}/saidas/while_iteration.yaml"
@@ -68,7 +68,7 @@ RSpec.describe 'Gerador de Código Intermediário' do
     expect($intermediario.quadruplas.map(&:values)).to match_array(esperadas)
   end
 
-  it 'gera quádrupla para conditional' do
+  xit 'gera quádrupla para conditional' do
     arquivo = File.read("#{pasta}/conditional")
     expect { compila(arquivo) }.not_to raise_error
     saida_esperada = "#{pasta}/saidas/conditional.yaml"
