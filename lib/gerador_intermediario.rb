@@ -52,7 +52,7 @@ class GeradorIntermediario
     when :repeat_iteration
       gera_iteracao_repeat(node)
     when :call
-      raise RuntimeError, 'TODO CALL'
+      gera_call(node)
     end
   end
 
@@ -103,15 +103,19 @@ class GeradorIntermediario
 
       if node.then_body
         gera_node(node.then_body)
-        salva_quadrupla('GOTO', nil, nil, nil)
-        goto_fim = @quadruplas.last
+
+        if node.else_body
+          salva_quadrupla('GOTO', nil, nil, nil)
+          goto_fim = @quadruplas.last
+        end
       end
 
       backpatch(goto_else)
 
-      gera_node(node.else_body) if node.else_body
-
-      backpatch(goto_fim) if goto_fim
+      if node.else_body
+        gera_node(node.else_body)
+        backpatch(goto_fim)
+      end
     end
   end
 
@@ -146,20 +150,23 @@ class GeradorIntermediario
     end
   end
 
+  def gera_call(node)
+    name = node.method_name.match
+    params = node.params
+
+    params.each do |param|
+      salva_quadrupla('PARAM', param.name.match)
+    end
+
+    salva_quadrupla('CALL', name, params.count)
+  end
+
   def backpatch(record)
     arg1 = @quadruplas.last.id + 1
     goto = record.object
     goto.arg1 = arg1
 
     @quadruplas.update(record.id, goto)
-  end
-
-  def salva_quadrupla(operador, arg1, arg2 = nil, resultado = nil)
-    linha = (@quadruplas.last&.id || 0) + 1
-    quadrupla = Quadrupla.new(linha, operador, arg1, arg2, resultado)
-    @quadruplas.push(quadrupla)
-
-    return quadrupla
   end
 
   def temporaria
@@ -224,6 +231,14 @@ class GeradorIntermediario
     @abandonadas = @abandonadas.uniq.sort
   end
 
+  def salva_quadrupla(operador, arg1, arg2 = nil, resultado = nil)
+    linha = (@quadruplas.last&.id || 0) + 1
+    quadrupla = Quadrupla.new(linha, operador, arg1, arg2, resultado)
+    @quadruplas.push(quadrupla)
+
+    return quadrupla
+  end
+
   def formata_saida(quadrupla, index)
     linha = quadrupla.linha
     operador, arg1, arg2, resultado = quadrupla.values
@@ -239,7 +254,7 @@ class GeradorIntermediario
       texto = "#{resultado} := #{arg1} #{operador} #{arg2}"
     elsif op_booleano
       texto = "#{resultado} := #{arg1} #{operador} #{arg2}"
-    elsif ['GOTO', 'IF'].include?(operador)
+    elsif ['GOTO', 'IF', 'PARAM'].include?(operador)
       quebra_linha = (operador != 'IF')
       anterior = quadruplas[index - 1]
       mostra_num = (anterior.operador != 'IF')
@@ -248,6 +263,10 @@ class GeradorIntermediario
       texto = "#{resultado} := NOT #{arg1}"
     elsif operador == 'END.'
       texto = "#{operador}"
+    elsif operador == 'CALL'
+      texto = "#{operador} #{arg1},#{arg2}"
+    else
+      raise RuntimeError, "unexpected operator: #{operador}"
     end
 
     if quadruplas.any? { |q| q.operador == 'GOTO' && q.arg1 == linha }
