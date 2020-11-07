@@ -58,7 +58,7 @@ reader = TTY::Reader.new(interrupt: :exit)
 #-------------------- Para facilitar o desenvolvimento
 require 'pry'
 reader.on(:keyctrl_r) do
-  puts 'Reloading...'.colorize(:blue)
+  puts 'Reloading...'.colorize(:cyan)
   # Main project directory.
   root_dir = File.expand_path('..', __dir__)
   # Directories within the project that should be reloaded.
@@ -87,7 +87,7 @@ loop do
   if File.file?(nome_arquivo)
     arquivo = File.read(nome_arquivo)
     begin
-      puts 'Compilando...'.colorize(:blue)
+      puts 'Compilando...'.colorize(:cyan)
       if Compiler.new.compile(arquivo)
         puts 'Compilação efetuada com sucesso.'.colorize(:green)
       end

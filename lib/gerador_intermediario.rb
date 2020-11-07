@@ -270,7 +270,7 @@ class GeradorIntermediario
     end
 
     if quadruplas.any? { |q| q.operador == 'GOTO' && q.arg1 == linha }
-      texto = texto.colorize(:blue)
+      texto = texto.colorize(:cyan)
     end
     texto = "#{texto}\n" if quebra_linha
     texto = texto.colorize(:yellow) if operador == 'GOTO'
