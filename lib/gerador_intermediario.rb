@@ -261,17 +261,12 @@ class GeradorIntermediario
       texto = "#{operador} #{arg1} "
     elsif operador == 'NOT'
       texto = "#{resultado} := NOT #{arg1}"
-    elsif operador == 'END.'
-      texto = "#{operador}"
     elsif operador == 'CALL'
       texto = "#{operador} #{arg1},#{arg2}"
     else
-      raise RuntimeError, "unexpected operator: #{operador}"
+      texto = "#{operador}"
     end
 
-    if quadruplas.any? { |q| q.operador == 'GOTO' && q.arg1 == linha }
-      texto = texto.colorize(:cyan)
-    end
     texto = "#{texto}\n" if quebra_linha
     texto = texto.colorize(:yellow) if operador == 'GOTO'
     texto = "#{linha.to_s.rjust(2, '0')}: #{texto}" if mostra_num

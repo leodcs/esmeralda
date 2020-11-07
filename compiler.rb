@@ -5,6 +5,7 @@ require './lib/scanner'
 require './lib/parser'
 require './lib/semantic'
 require './lib/gerador_intermediario'
+require './lib/gerador_final'
 Dir['./lib/exceptions/*.rb'].each { |exception| require exception }
 
 class Compiler
@@ -13,6 +14,7 @@ class Compiler
     parse
     analyze_semantic
     generate_intermediate_code
+    generate_final_code
   end
 
   def scan(file)
@@ -47,6 +49,11 @@ class Compiler
     end
 
     puts table
+  end
+
+  def generate_final_code
+    $final = GeradorFinal.new($intermediario.quadruplas).generate
+    $final.imprime_saida
   end
 end
 
