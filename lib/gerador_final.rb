@@ -21,27 +21,32 @@ class GeradorFinal
       when '/'
         push_comando(:DIV, quadrupla)
       when ':='
-        @comandos << ComandoBaixo.new(:LOAD, quadrupla.arg1, quadrupla.resultado)
+        load = push_load(quadrupla.arg1)
+        @comandos << ComandoBaixo.new(:STORE, load.destino, quadrupla.resultado)
       when 'IF'
-        @comandos << ComandoBaixo.new(:CMP, quadrupla.arg1)
+        load = push_load(quadrupla.arg1)
+        @comandos << ComandoBaixo.new(:CMP, load.destino)
       when 'OR', 'AND', '<', '>', '<=', '>=', '=', '<>'
         operador = traduz_operador(quadrupla.operador)
         push_comando(operador, quadrupla)
       when 'GOTO'
         if (jump = @jumps.find { |a,_| a == quadrupla.arg1 })
-          @comandos << ComandoBaixo.new(:JNZ, jump[1])
+          load = push_load(jump[1])
+          @comandos << ComandoBaixo.new(:JNZ, load.destino)
         else
           @jumps << [quadrupla.arg1, '?']
           @comandos << ComandoBaixo.new(:GOTO, quadrupla.arg1)
         end
       when 'NOT'
-        @comandos << ComandoBaixo.new(:NOT, quadrupla.arg1)
+        load = push_load(quadrupla.arg1)
+        @comandos << ComandoBaixo.new(:NOT, load.destino)
       when 'END.'
         @comandos << ComandoBaixo.new('END.')
       else
         puts "Unexpected operator #{quadrupla.operador.inspect}"
       end
 
+      binding.pry if quadrupla.operador == 'END.'
       backpatch(quadrupla.linha) if @jumps.any? { |g| g[0] == quadrupla.linha }
     end
 
@@ -61,6 +66,7 @@ class GeradorFinal
       end
 
       texto = texto.colorize(:yellow) if comando.instrucao == :JNZ
+      texto += "\n\n" if comando.instrucao == :STORE
 
       puts "#{linha}: #{texto}"
     end
@@ -97,8 +103,17 @@ class GeradorFinal
   def push_comando(instrucao, quadrupla)
     _, fonte, destino, resultado = quadrupla.values
 
-    @comandos << reg1 = ComandoBaixo.new(:LOAD, fonte, 'R0')
-    @comandos << ComandoBaixo.new(instrucao, destino, reg1.destino)
-    @comandos << ComandoBaixo.new(:STORE, reg1.destino, resultado)
+    push_load(fonte, 'R0')
+    push_load(destino, 'R1')
+
+    @comandos << ComandoBaixo.new(instrucao, 'R1', 'R0')
+
+    @comandos << ComandoBaixo.new(:STORE, 'R0', resultado)
+  end
+
+  def push_load(valor, registrador = 'R0')
+    @comandos << ComandoBaixo.new(:LOAD, valor, registrador)
+
+    return @comandos.last
   end
 end
