@@ -3,13 +3,18 @@ require_relative 'comando_baixo'
 class GeradorFinal
   def initialize(quadruplas)
     @quadruplas = quadruplas
+    @gotos = @quadruplas.select { |quadrupla| quadrupla.operador == 'GOTO' }.map(&:arg1).uniq
     @comandos = []
     @jumps = []
   end
 
   def generate
-    @quadruplas.each_with_index do |quadrupla, index|
+    @quadruplas.each do |quadrupla|
       @linha = @comandos.count + 1
+
+      if quadrupla.operador != 'GOTO' && (goto = @gotos.find { |goto| goto == quadrupla.linha })
+        @jumps << [goto, @linha]
+      end
 
       case quadrupla.operador
       when '+'
@@ -30,13 +35,7 @@ class GeradorFinal
         operador = traduz_operador(quadrupla.operador)
         push_comando(operador, quadrupla)
       when 'GOTO'
-        if (jump = @jumps.find { |a,_| a == quadrupla.arg1 })
-          load = push_load(jump[1])
-          @comandos << ComandoBaixo.new(:JNZ, load.destino)
-        else
-          @jumps << [quadrupla.arg1, '?']
-          @comandos << ComandoBaixo.new(:GOTO, quadrupla.arg1)
-        end
+        @comandos << ComandoBaixo.new(:GOTO, quadrupla.arg1)
       when 'NOT'
         load = push_load(quadrupla.arg1)
         @comandos << ComandoBaixo.new(:NOT, load.destino)
@@ -45,10 +44,9 @@ class GeradorFinal
       else
         puts "Unexpected operator #{quadrupla.operador.inspect}"
       end
-
-      binding.pry if quadrupla.operador == 'END.'
-      backpatch(quadrupla.linha) if @jumps.any? { |g| g[0] == quadrupla.linha }
     end
+
+    backpatch_gotos
 
     return self
   end
@@ -66,7 +64,6 @@ class GeradorFinal
       end
 
       texto = texto.colorize(:yellow) if comando.instrucao == :JNZ
-      texto += "\n\n" if comando.instrucao == :STORE
 
       puts "#{linha}: #{texto}"
     end
@@ -75,17 +72,12 @@ class GeradorFinal
 
   private
 
-  def backpatch(linha)
-    @jumps = @jumps.map do |antiga, nova|
-      if antiga == linha
-        nova = @linha
-        @comandos.select { |c| c.instrucao == :GOTO && c.fonte == antiga }.each do |comando|
-          comando.instrucao = :JNZ
-          comando.fonte = nova
-        end
-      end
-
-      [antiga, nova]
+  def backpatch_gotos
+    comandos = @comandos.select { |comando| comando.instrucao == :GOTO }
+    comandos.each do |comando|
+      nova_linha = @jumps.find { |j| j[0] == comando.fonte }[1]
+      comando.instrucao = :JNZ
+      comando.fonte = nova_linha
     end
   end
 
