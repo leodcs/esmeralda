@@ -109,9 +109,11 @@ class Parser
       consome(:ABRE_PAREN)
       expressions << expr_relacional
       consome(:FECHA_PAREN)
+
+      expressions = [::Nodes::BooleanExpression.new(operator, expressions)]
     end
 
-    return ::Nodes::MultiExpression.new(operator, expressions)
+    return ::Nodes::MultiExpression.new(expressions)
   end
 
   def op_relacional

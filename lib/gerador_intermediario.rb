@@ -43,8 +43,10 @@ class GeradorIntermediario
       node.name.match
     when :assignment
       gera_assignment(node)
-    when :operation, :expression, :multi_expression
-      gera_operation(node)
+    when :operation, :expression, :boolean_expression
+      gera_expression(node)
+    when :multi_expression
+      gera_expression(node.nodes[0])
     when :conditional
       gera_condicional(node)
     when :while_iteration
@@ -83,7 +85,7 @@ class GeradorIntermediario
     end
   end
 
-  def gera_operation(node)
+  def gera_expression(node)
     operador = node.operator.match
     arg1 = gera_node(node.nodes[0])
     arg2 = gera_node(node.nodes[1])

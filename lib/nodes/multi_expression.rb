@@ -1,4 +1,4 @@
 module Nodes
-  class MultiExpression < Expression
+  class MultiExpression < Node
   end
 end
