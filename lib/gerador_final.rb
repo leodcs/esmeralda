@@ -39,6 +39,11 @@ class GeradorFinal
       when 'NOT'
         load = push_load(quadrupla.arg1)
         @comandos << ComandoBaixo.new(:NOT, load.destino)
+      when 'PARAM'
+        load = push_load(quadrupla.arg1)
+        @comandos << ComandoBaixo.new(:PARAM, load.destino)
+      when 'CALL'
+        @comandos << ComandoBaixo.new(:CALL, quadrupla.arg1, quadrupla.arg2)
       when 'END.'
         @comandos << ComandoBaixo.new('END.')
       else
