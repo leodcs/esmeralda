@@ -29,7 +29,7 @@ class GeradorFinal
         load = push_load(quadrupla.arg1)
         @comandos << ComandoBaixo.new(:STORE, load.destino, quadrupla.resultado)
       when 'IF'
-        @comandos << ComandoBaixo.new(:CMP, 'R0')
+        @comandos << ComandoBaixo.new(:CMP, '#R0')
       when 'OR', 'AND', '<', '>', '<=', '>=', '=', '<>'
         operador = traduz_operador(quadrupla.operador)
         push_comando(operador, quadrupla)
@@ -99,15 +99,15 @@ class GeradorFinal
   def push_comando(instrucao, quadrupla)
     _, fonte, destino, resultado = quadrupla.values
 
-    push_load(fonte, 'R0')
-    push_load(destino, 'R1')
+    push_load(fonte, '#R0')
+    push_load(destino, '#R1')
 
-    @comandos << ComandoBaixo.new(instrucao, 'R1', 'R0')
+    @comandos << ComandoBaixo.new(instrucao, '#R1', '#R0')
 
-    @comandos << ComandoBaixo.new(:STORE, 'R0', resultado)
+    @comandos << ComandoBaixo.new(:STORE, '#R0', resultado)
   end
 
-  def push_load(valor, registrador = 'R0')
+  def push_load(valor, registrador = '#R0')
     @comandos << ComandoBaixo.new(:LOAD, valor, registrador)
 
     return @comandos.last
