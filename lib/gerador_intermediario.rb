@@ -65,7 +65,7 @@ class GeradorIntermediario
       arg2 = nil
       flag = false
       var = node.name.match
-      if quadruplas.any? { |q| q.resultado == var && (q.arg1 == var || q.arg2 == var) }
+      if variavel_viva?(var)
         resultado = temporaria
         flag = true
       else
@@ -75,7 +75,7 @@ class GeradorIntermediario
       nodes = node.nodes
 
       if (generation = gera_node(nodes[0])).is_a?(Array)
-        operador, arg1, arg2 = serializa(generation, resultado)
+        operador, arg1, arg2 = decompoe(generation, resultado)
       else
         arg1 = generation
       end
@@ -106,6 +106,7 @@ class GeradorIntermediario
       if node.then_body
         gera_node(node.then_body)
 
+        # Se houver else, deve pular se entrar no then
         if node.else_body
           salva_quadrupla('GOTO', nil, nil, nil)
           goto_fim = @quadruplas.last
@@ -192,15 +193,16 @@ class GeradorIntermediario
     @parse.assignments.map(&:name).map(&:match).map(&:upcase)
   end
 
-  def serializa(generation, resultado = nil)
+  # Gera as temporarias para um objeto Node
+  def decompoe(generation, resultado = nil)
     return generation if generation.none? { |e| e.is_a?(Array) }
 
     operador, arg1, arg2 = generation
 
     if arg1.is_a?(Array)
-      interna = serializa(arg1, resultado)
+      interna = decompoe(arg1, resultado)
     elsif arg2.is_a?(Array)
-      interna = serializa(arg2, resultado)
+      interna = decompoe(arg2, resultado)
     end
 
     if temporaria?(interna[1]) && interna[1] != resultado
@@ -211,15 +213,20 @@ class GeradorIntermediario
     salva_quadrupla(*interna, var)
     generation.map! { |g| g == interna ? var : g }
 
-    serializa(generation)
+    decompoe(generation)
   end
 
   def gera_clausula(node)
-    condicao = serializa(gera_node(node), temporaria)
+    condicao = decompoe(gera_node(node), temporaria)
 
     salva_quadrupla(*condicao, temporaria).resultado
   end
 
+  def variavel_viva?(var)
+    quadruplas.any? do |q|
+      q.resultado == var && (q.arg1 == var || q.arg2 == var)
+    end
+  end
 
   def temporaria?(arg)
     arg.to_s.match?(/^#{PREFIXO_VARIAVEL}/)

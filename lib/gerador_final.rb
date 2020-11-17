@@ -3,9 +3,9 @@ require_relative 'comando_baixo'
 class GeradorFinal
   def initialize(quadruplas)
     @quadruplas = quadruplas
-    @gotos = @quadruplas.select { |quadrupla| quadrupla.operador == 'GOTO' }.map(&:arg1).uniq
     @comandos = []
-    @jumps = []
+    @gotos = @quadruplas.select { |quadrupla| quadrupla.operador == 'GOTO' }.map(&:arg1).uniq
+    @jumps = [] # Vetor para as linhas dos GOTOs antigos e as novas linhas no cod. final
   end
 
   def generate
@@ -77,8 +77,9 @@ class GeradorFinal
   private
 
   def backpatch_gotos
-    comandos = @comandos.select { |comando| comando.instrucao == :GOTO }
-    comandos.each do |comando|
+    gotos = @comandos.select { |comando| comando.instrucao == :GOTO }
+
+    gotos.each do |comando|
       nova_linha = @jumps.find { |j| j[0] == comando.fonte }[1]
       comando.instrucao = :JNZ
       comando.fonte = nova_linha

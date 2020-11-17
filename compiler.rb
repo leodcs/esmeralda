@@ -34,23 +34,6 @@ class Compiler
     $intermediario.imprime_saida
   end
 
-  def optimize
-    $otimizado = Otimizador.new($intermediario).optimize
-
-    quadruplas = $otimizado.quadruplas
-
-    require 'terminal-table'
-    header = ['', 'operador', 'arg1', 'arg2', 'resultado']
-    table = Terminal::Table.new(title: 'Código Otimizado', headings: header, style: { width: 80 }) do |t|
-      quadruplas.each do |q|
-        t << :separator
-        t << [q.linha, q.operador, q.arg1, q.arg2, q.resultado]
-      end
-    end
-
-    puts table
-  end
-
   def generate_final_code
     $final = GeradorFinal.new($intermediario.quadruplas).generate
     $final.imprime_saida
